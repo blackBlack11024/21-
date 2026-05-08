@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>21點 網路遊戲</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2b7a0b; /* 經典賭桌綠色 */
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        #game-board {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #3b9a1b;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            min-height: 140px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .card {
+            width: 90px;
+            height: 130px;
+            background-color: white;
+            color: black;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .card.red {
+            color: #d32f2f;
+        }
+        .card.hidden {
+            background-color: #1a1a1a;
+            background-image: repeating-linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333), repeating-linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            color: transparent;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #f1c40f;
+            color: #333;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #f39c12;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        #message {
+            font-size: 20px;
+            margin-top: 20px;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-board">
+        <h1>♠♥ 21點 ♣♦</h1>
+        
+        <h2>莊家 (<span id="dealer-score">?</span>)</h2>
+        <div id="dealer-cards" class="cards-container"></div>
+
+        <h2>玩家 (<span id="player-score">0</span>)</h2>
+        <div id="player-cards" class="cards-container"></div>
+
+        <div id="message">點擊「開始遊戲」來發牌！</div>
+
+        <div class="controls">
+            <button id="btn-hit" disabled>要牌 (Hit)</button>
+            <button id="btn-stand" disabled>停牌 (Stand)</button>
+            <button id="btn-start">開始遊戲</button>
+        </div>
+    </div>
+
+    <script>
+        const suits = ['♠', '♥', '♦', '♣'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        
+        let deck = [];
+        let dealerCards = [];
+        let playerCards = [];
+        let gameActive = false;
+
+        const dealerCardsEl = document.getElementById('dealer-cards');
+        const playerCardsEl = document.getElementById('player-cards');
+        const dealerScoreEl = document.getElementById('dealer-score');
+        const playerScoreEl = document.getElementById('player-score');
+        const messageEl = document.getElementById('message');
+        
+        const btnHit = document.getElementById('btn-hit');
+        const btnStand = document.getElementById('btn-stand');
+        const btnStart = document.getElementById('btn-start');
+
+        // 綁定按鈕事件
+        btnStart.addEventListener('click', startGame);
+        btnHit.addEventListener('click', hit);
+        btnStand.addEventListener('click', stand);
+
+        // 建立並洗牌
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            // Fisher-Yates 洗牌演算法
+            for (let i = deck.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        // 計算手牌點數
+        function calculateScore(cards) {
+            let score = 0;
+            let aces = 0;
+
+            for (let card of cards) {
+                if (['J', 'Q', 'K'].includes(card.value)) {
+                    score += 10;
+                } else if (card.value === 'A') {
+                    score += 11;
+                    aces += 1;
+                } else {
+                    score += parseInt(card.value);
+                }
+            }
+
+            // 處理 A 的點數 (超過 21 點時，A 當作 1 點)
+            while (score > 21 && aces > 0) {
+                score -= 10;
+                aces -= 1;
+            }
+            return score;
+        }
+
+        // 渲染卡片 UI
+        function renderCards(cards, element, hideFirst = false) {
+            element.innerHTML = '';
+            cards.forEach((card, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                
+                // 如果是紅心或方塊，加上紅色樣式
+                if (card.suit === '♥' || card.suit === '♦') {
+                    cardDiv.classList.add('red');
+                }
+
+                if (hideFirst && index === 0) {
+                    cardDiv.classList.add('hidden');
+                } else {
+                    cardDiv.innerHTML = `${card.suit}<br>${card.value}`;
+                }
+                element.appendChild(cardDiv);
+            });
+        }
+
+        // 更新畫面分數與卡片
+        function updateUI(dealerHidden = true) {
+            renderCards(playerCards, playerCardsEl);
+            renderCards(dealerCards, dealerCardsEl, dealerHidden);
+
+            playerScoreEl.innerText = calculateScore(playerCards);
+            
+            if (dealerHidden) {
+                // 莊家蓋牌時，只計算第二張牌的分數
+                dealerScoreEl.innerText = dealerCards.length > 1 ? calculateScore([dealerCards[1]]) : '?';
+            } else {
+                dealerScoreEl.innerText = calculateScore(dealerCards);
+            }
+        }
+
+        // 開始新遊戲
+        function startGame() {
+            createDeck();
+            dealerCards = [deck.pop(), deck.pop()];
+            playerCards = [deck.pop(), deck.pop()];
+            gameActive = true;
+
+            btnHit.disabled = false;
+            btnStand.disabled = false;
+            btnStart.innerText = '重新開始';
+            messageEl.innerText = '你要補牌還是停牌？';
+
+            updateUI(true);
+
+            // 檢查玩家是否一開始就 21 點 (Blackjack)
+            if (calculateScore(playerCards) === 21) {
+                endGame("玩家 21 點 (Blackjack)！你贏了！");
+            }
+        }
+
+        // 玩家要牌
+        function hit() {
+            if (!gameActive) return;
+            
+            playerCards.push(deck.pop());
+            updateUI(true);
+
+            if (calculateScore(playerCards) > 21) {
+                endGame("玩家爆牌 (Bust)！莊家獲勝。");
+            }
+        }
+
+        // 玩家停牌，換莊家回合
+        function stand() {
+            if (!gameActive) return;
+            gameActive = false;
+            btnHit.disabled = true;
+            btnStand.disabled = true;
+
+            // 莊家規則：點數小於 17 必須補牌
+            let dealerScore = calculateScore(dealerCards);
+            while (dealerScore < 17) {
+                dealerCards.push(deck.pop());
+                dealerScore = calculateScore(dealerCards);
+            }
+
+            updateUI(false); // 翻開莊家底牌
+
+            const playerScore = calculateScore(playerCards);
+            
+            // 判斷勝負
+            if (dealerScore > 21) {
+                endGame("莊家爆牌！你贏了！");
+            } else if (dealerScore > playerScore) {
+                endGame("莊家點數較大，莊家獲勝。");
+            } else if (dealerScore < playerScore) {
+                endGame("玩家點數較大，你贏了！");
+            } else {
+                endGame("雙方平手 (Push)！");
+            }
+        }
+
+        // 結束遊戲並顯示訊息
+        function endGame(msg) {
+            gameActive = false;
+            btnHit.disabled = true;
+            btnStand.disabled = true;
+            messageEl.innerText = msg;
+            updateUI(false); // 確保結算時底牌是翻開的
+        }
+    </script>
+</body>
+</html>
