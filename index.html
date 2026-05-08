@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>終極 21點 - 滑桿吸附版</title>
+    <title>21點</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ============================
@@ -190,7 +190,7 @@
         <div id="dealer-cards" class="cards-container"></div>
 
         <div id="message">Slide to bet!</div>
-        <div id="swipe-hint">⬆️ 滑動要牌 | ⬇️ 滑動停牌</div>
+        <div id="swipe-hint">⬆️ 滑動要牌  ⬇️ 滑動停牌</div>
 
         <h2>Player <span>(<span id="player-score">0</span>)</span></h2>
         <div id="player-cards" class="cards-container"></div>
@@ -224,7 +224,7 @@
             
             <div id="gameover-panel" class="controls hidden-ui">
                 <button class="action-deal" id="btn-play-again">Play Again</button>
-                <button class="action-bailout hidden-ui" id="btn-bailout">💸 申請救濟金 (+$500)</button>
+                <button class="action-bailout hidden-ui" id="btn-bailout">申請救濟金 (+$500)</button>
             </div>
         </div>
     </div>
@@ -308,7 +308,7 @@
                 betSlider.dispatchEvent(new Event('input')); // 觸發滑桿更新
                 gameBoard.classList.add('shake-active');
                 setTimeout(() => gameBoard.classList.remove('shake-active'), 400);
-                showMessage("ALL IN！破釜沉舟！", "lose");
+                showMessage("ALL IN", "lose");
             }
         });
 
@@ -342,7 +342,7 @@
             btnAllIn.disabled = bankroll <= 0;
         }
 
-        function bailout() { bankroll = 500; currentBet = 0; initBettingPhase(); resetTable(); showMessage("警衛把你踢回街上，你撿到了 $500！"); }
+        function bailout() { bankroll = 500; currentBet = 0; initBettingPhase(); resetTable(); showMessage("獲得 $500"); }
 
         function switchPanel(panelName) {
             pBetting.classList.add('hidden-ui'); pPlaying.classList.add('hidden-ui');
@@ -460,10 +460,10 @@
 
             const playerScore = calcScore(playerCards);
             setTimeout(() => {
-                if (dealerScore > 21) processPayout('win', "莊家爆牌！贏得 $");
-                else if (dealerScore > playerScore) processPayout('lose', "莊家點數大。輸了 $");
-                else if (dealerScore < playerScore) processPayout('win', "你贏了！獲得 $");
-                else processPayout('push', "雙方平手 (Push)");
+                if (dealerScore > 21) processPayout('win', "莊家爆牌 贏得 $");
+                else if (dealerScore > playerScore) processPayout('lose', "莊家點數大 輸了 $");
+                else if (dealerScore < playerScore) processPayout('win', "你贏了 獲得 $");
+                else processPayout('push', "雙方平手");
             }, 500);
         }
 
@@ -473,11 +473,11 @@
             else if (result === 'win') { winAmount = currentBet * 2; bankroll += winAmount; showMessage(`${customMsg}${winAmount}!`, 'win'); } 
             else if (result === 'push') { bankroll += currentBet; showMessage(customMsg); } 
             else if (result === 'bust') { 
-                if(bankroll === 0) showMessage(`爆牌！你被警衛丟出去了！輸掉 $${currentBet}`, 'lose');
+                if(bankroll === 0) showMessage(`爆牌 輸掉 $${currentBet}`, 'lose')
                 else showMessage(`爆牌了！輸掉 $${currentBet}`, 'lose'); 
             }
             else if (result === 'lose') { 
-                if(bankroll === 0) showMessage(`破產！警衛把你架了出去！輸了 $${currentBet}`, 'lose');
+                if(bankroll === 0) showMessage(`破產 輸了 $${currentBet}`, 'lose');
                 else showMessage(`${customMsg}${currentBet}`, 'lose'); 
             }
 
