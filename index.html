@@ -4,60 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>21點</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* ============================
+           全域與主題設定
+           ============================ */
         body {
-            font-family: 'Montserrat', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1e2f 50%, #000000 100%);
+            font-family: 'Montserrat', 'PingFang TC', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1e2f 50%, #000000 100%); /* 預設暗巷主題 */
             color: #f8fafc;
             text-align: center;
-            margin: 0;
-            padding: 0;
-            height: 100vh; 
-            height: 100dvh; 
-            overflow: hidden; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-            user-select: none;
-            -webkit-user-select: none;
+            margin: 0; padding: 0;
+            height: 100vh; height: 100dvh; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation; user-select: none; -webkit-user-select: none;
+            transition: background 1s ease;
+        }
+
+        /* VIP 主題樣式 (商店解鎖) */
+        body.theme-vip {
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #000000 100%);
+        }
+        body.theme-vip #game-board {
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(255, 215, 0, 0.15);
         }
 
         #game-board {
-            width: 100%;
-            max-width: 600px;
-            height: 100%;
-            max-height: 850px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            width: 100%; max-width: 600px; height: 100%; max-height: 850px;
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly; 
-            padding: 2vh 4vw;
-            box-sizing: border-box;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; justify-content: space-evenly; 
+            padding: 2vh 4vw; box-sizing: border-box; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
 
         @media (min-width: 600px) { #game-board { height: 96%; border-radius: 24px; } }
 
-        #finance-panel {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,215,0,0.2);
-            margin-bottom: 1vh;
+        /* ============================
+           頂部資訊與商店按鈕
+           ============================ */
+        #header-area {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1vh;
         }
-        .finance-item { font-size: clamp(14px, 2.5vh, 18px); font-weight: 700; letter-spacing: 1px; }
-        .finance-item span { color: #fbbf24; font-family: 'Montserrat', sans-serif; }
+
+        #finance-panel {
+            display: flex; gap: 15px; background: rgba(0, 0, 0, 0.4);
+            padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2);
+            flex-grow: 1;
+        }
+        .finance-item { font-size: clamp(13px, 2.2vh, 16px); font-weight: 700; letter-spacing: 1px; }
+        .finance-item span { color: #fbbf24; }
+
+        #btn-open-shop {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            padding: 10px 15px; font-size: clamp(18px, 3vh, 24px); width: auto;
+            border-radius: 15px; margin-left: 10px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
 
         h2 { font-weight: 500; margin: 0; font-size: clamp(14px, 2.2vh, 18px); color: #94a3b8; letter-spacing: 2px; }
         h2 span { color: #e2e8f0; font-weight: 700; }
 
+        /* ============================
+           卡片區塊
+           ============================ */
         .cards-container {
             display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-content: center; flex-grow: 1; min-height: clamp(110px, 18vh, 160px);
         }
@@ -65,65 +75,124 @@
         .card {
             height: clamp(85px, 14vh, 130px); width: clamp(60px, 10vh, 90px);
             background: linear-gradient(145deg, #ffffff, #e6e6e6); color: #0f172a; border-radius: 10px;
-            display: flex; justify-content: center; align-items: center; font-size: clamp(22px, 4vh, 32px); font-weight: 700;
+            display: flex; justify-content: center; align-items: center; font-size: clamp(22px, 4vh, 32px); font-weight: 800;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.5);
-            opacity: 0; transform: translateY(-30px) scale(0.95); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; transform: translateY(-30px) scale(0.95); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
         .card.red { color: #f43f5e; }
-        .card.hidden { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); border: 2px solid rgba(255,255,255,0.2); color: transparent !important; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .card.deal { opacity: 1; transform: translateY(0) scale(1); }
 
-        .panel-container { min-height: clamp(60px, 10vh, 80px); display: flex; flex-direction: column; justify-content: center; }
+        /* 預設牌背 */
+        .card.hidden { background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%); border: 2px solid rgba(255,255,255,0.2); color: transparent !important; }
+        /* 黃金牌背 (商店解鎖) */
+        body.cards-gold .card.hidden { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); border: 2px solid #fef08a; }
 
+        /* ============================
+           手勢提示動畫
+           ============================ */
+        #swipe-hint {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; letter-spacing: 2px;
+            pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+        #swipe-hint.show { opacity: 1; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); } 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); } }
+
+        /* ============================
+           控制面板與按鈕
+           ============================ */
+        .panel-container { min-height: clamp(60px, 10vh, 80px); display: flex; flex-direction: column; justify-content: center; }
         .controls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
 
         button {
-            width: clamp(75px, 18vw, 110px); padding: clamp(10px, 1.8vh, 14px) 0; font-size: clamp(13px, 1.8vh, 15px);
+            width: clamp(75px, 18vw, 110px); padding: clamp(10px, 1.8vh, 14px) 0; font-size: clamp(12px, 1.8vh, 15px);
             cursor: pointer; border: none; border-radius: 50px; font-family: 'Montserrat', sans-serif; font-weight: 700;
-            letter-spacing: 1px; color: white; transition: all 0.3s ease; text-transform: uppercase; box-sizing: border-box; touch-action: manipulation;
+            letter-spacing: 1px; color: white; transition: all 0.2s ease; text-transform: uppercase; touch-action: manipulation;
         }
 
-        #playing-panel button, #gameover-panel button:not(.action-bailout) { width: clamp(90px, 22vw, 120px); padding: clamp(12px, 2vh, 16px) 0; }
+        #playing-panel button, #gameover-panel button:not(.action-bailout) { width: clamp(85px, 20vw, 115px); padding: clamp(12px, 2vh, 16px) 0; }
 
         button.chip-btn { background: rgba(255, 255, 255, 0.1); border: 2px dashed rgba(255, 215, 0, 0.5); color: #fbbf24; }
         button.chip-btn:hover:not(:disabled) { background: rgba(255, 215, 0, 0.2); transform: translateY(-3px); border: 2px solid rgba(255, 215, 0, 1); }
 
-        button.action-allin { background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); }
+        button.action-allin { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
         button.action-deal { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         button.action-hit { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
         button.action-stand { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        button.action-double { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); } /* 雙倍下注按鈕 */
         button.action-clear { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
         button.action-bailout { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); width: auto; padding: 12px 24px; }
         
         button:hover:not(:disabled):not(.chip-btn) { transform: translateY(-3px); filter: brightness(1.2); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
-        button.action-allin:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(236, 72, 153, 0.6); }
-
+        button:active:not(:disabled) { transform: scale(0.95); }
         button:disabled { background: rgba(255, 255, 255, 0.05) !important; color: rgba(255, 255, 255, 0.2) !important; border: 2px dashed transparent !important; box-shadow: none !important; cursor: not-allowed; transform: none !important; }
 
         .hidden-ui { display: none !important; }
 
+        /* ============================
+           視覺特效與訊息
+           ============================ */
         #message {
-            font-size: clamp(18px, 3vh, 24px); font-weight: 800; color: #fcd34d; opacity: 0; transform: scale(0.9);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 2px 10px rgba(252, 211, 77, 0.3); min-height: 35px;
+            font-size: clamp(16px, 2.5vh, 22px); font-weight: 800; color: #fcd34d; opacity: 0; transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 2px 10px rgba(252, 211, 77, 0.3); min-height: 35px;
         }
         #message.show { opacity: 1; transform: scale(1); }
         .win-text { color: #10b981 !important; text-shadow: 0 0 15px rgba(16, 185, 129, 0.5) !important; }
-        .lose-text { color: #ef4444 !important; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5) !important; }
+        .lose-text { color: #ef4444 !important; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5) !important; font-size: clamp(14px, 2.2vh, 20px) !important; }
+
+        /* 震撼的 All In 震動特效 */
+        @keyframes shake-hard {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake-active { animation: shake-hard 0.4s cubic-bezier(.36,.07,.19,.97) both; border-color: #ef4444 !important; }
+
+        /* ============================
+           資產商店 Modal
+           ============================ */
+        #shop-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        #shop-modal.show { opacity: 1; pointer-events: auto; }
+        .shop-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 85%; max-width: 400px; border: 1px solid #334155; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #334155; }
+        .shop-item-info { text-align: left; }
+        .shop-item-title { font-weight: 700; font-size: 18px; margin-bottom: 5px; color: #f8fafc; }
+        .shop-item-desc { font-size: 12px; color: #94a3b8; }
+        .btn-buy { width: auto; padding: 8px 16px; font-size: 14px; background: #fbbf24; color: #000; }
+        .btn-equip { background: #10b981; }
+        .btn-close-shop { width: 100%; background: #475569; margin-top: 10px; }
+
     </style>
 </head>
 <body>
 
     <div id="game-board">
-        <div id="finance-panel">
-            <div class="finance-item">💰 Bank: $<span id="bankroll-display">1000</span></div>
-            <div class="finance-item">🪙 Bet: $<span id="bet-display">0</span></div>
+        <div id="header-area">
+            <div id="finance-panel">
+                <div class="finance-item">💰 Bank: $<span id="bankroll-display">1000</span></div>
+                <div class="finance-item">🪙 Bet: $<span id="bet-display">0</span></div>
+            </div>
+            <button id="btn-open-shop">🛒</button>
         </div>
         
         <h2>Dealer <span>(<span id="dealer-score">?</span>)</span></h2>
         <div id="dealer-cards" class="cards-container"></div>
 
         <div id="message">Place your bets!</div>
+        <div id="swipe-hint">⬆️ 滑動要牌 | ⬇️ 滑動停牌</div>
 
         <h2>Player <span>(<span id="player-score">0</span>)</span></h2>
         <div id="player-cards" class="cards-container"></div>
@@ -138,6 +207,7 @@
             </div>
             <div id="playing-panel" class="controls hidden-ui">
                 <button class="action-hit" id="btn-hit">Hit</button>
+                <button class="action-double" id="btn-double">Double</button>
                 <button class="action-stand" id="btn-stand">Stand</button>
             </div>
             <div id="gameover-panel" class="controls hidden-ui">
@@ -145,111 +215,172 @@
                 <button class="action-bailout hidden-ui" id="btn-bailout">💸 申請救濟金 (+$500)</button>
             </div>
         </div>
+
+        <!-- 裝備與資產商店 -->
+        <div id="shop-modal">
+            <div class="shop-content">
+                <h2 style="color: #fbbf24; margin-bottom: 20px; font-size: 24px;">資產商店</h2>
+                
+                <div class="shop-item">
+                    <div class="shop-item-info">
+                        <div class="shop-item-title">黃金牌背</div>
+                        <div class="shop-item-desc">$2,000 | 尊爵不凡的象徵</div>
+                    </div>
+                    <button class="btn-buy" id="btn-buy-cards">購買</button>
+                </div>
+
+                <div class="shop-item">
+                    <div class="shop-item-info">
+                        <div class="shop-item-title">VIP 包廂賭桌</div>
+                        <div class="shop-item-desc">$5,000 | 頂級深紅絨布桌面</div>
+                    </div>
+                    <button class="btn-buy" id="btn-buy-vip">購買</button>
+                </div>
+
+                <button class="btn-close-shop" id="btn-close-shop">離開商店</button>
+            </div>
+        </div>
     </div>
 
     <script>
+        // --- 核心變數 ---
         let bankroll = 1000;
         let currentBet = 0;
-        
         const suits = ['♠', '♥', '♦', '♣'];
         const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-        let deck = [], dealerCards = [], playerCards = [], gameActive = false;
+        let deck = [], dealerCards = [], playerCards = [], gameActive = false, isFirstTurn = true;
 
-        const dealerCardsEl = document.getElementById('dealer-cards');
-        const playerCardsEl = document.getElementById('player-cards');
-        const dealerScoreEl = document.getElementById('dealer-score');
-        const playerScoreEl = document.getElementById('player-score');
-        const messageEl = document.getElementById('message');
+        // --- 裝備資產狀態 ---
+        let ownsGoldCards = false; let usingGoldCards = false;
+        let ownsVIP = false; let usingVIP = false;
+
+        // --- DOM ---
+        const gameBoard = document.getElementById('game-board');
+        const dCardsEl = document.getElementById('dealer-cards'); const pCardsEl = document.getElementById('player-cards');
+        const dScoreEl = document.getElementById('dealer-score'); const pScoreEl = document.getElementById('player-score');
+        const msgEl = document.getElementById('message'); const swipeHint = document.getElementById('swipe-hint');
+        const bankEl = document.getElementById('bankroll-display'); const betEl = document.getElementById('bet-display');
         
-        const bankrollDisplay = document.getElementById('bankroll-display');
-        const betDisplay = document.getElementById('bet-display');
-
-        const bettingPanel = document.getElementById('betting-panel');
-        const playingPanel = document.getElementById('playing-panel');
-        const gameoverPanel = document.getElementById('gameover-panel');
+        const pBetting = document.getElementById('betting-panel'); const pPlaying = document.getElementById('playing-panel'); const pGameover = document.getElementById('gameover-panel');
         
-        const btnChip10 = document.getElementById('btn-chip-10');
-        const btnChip50 = document.getElementById('btn-chip-50');
-        const btnAllIn = document.getElementById('btn-all-in');
-        const btnDeal = document.getElementById('btn-deal');
-        const btnHit = document.getElementById('btn-hit');
-        const btnStand = document.getElementById('btn-stand');
-        const btnPlayAgain = document.getElementById('btn-play-again');
-        const btnBailout = document.getElementById('btn-bailout');
+        const btnHit = document.getElementById('btn-hit'); const btnStand = document.getElementById('btn-stand');
+        const btnDouble = document.getElementById('btn-double'); const btnDeal = document.getElementById('btn-deal');
+        const btnAllIn = document.getElementById('btn-all-in'); const btnBailout = document.getElementById('btn-bailout');
 
-        btnChip10.addEventListener('click', () => addBet(10));
-        btnChip50.addEventListener('click', () => addBet(50));
-        btnAllIn.addEventListener('click', () => { if (bankroll > 0) addBet(bankroll); });
+        // --- 商店 DOM ---
+        const shopModal = document.getElementById('shop-modal');
+        const btnBuyCards = document.getElementById('btn-buy-cards'); const btnBuyVIP = document.getElementById('btn-buy-vip');
+
+        // --- 綁定事件 ---
+        document.getElementById('btn-chip-10').addEventListener('click', () => addBet(10));
+        document.getElementById('btn-chip-50').addEventListener('click', () => addBet(50));
         document.getElementById('btn-clear-bet').addEventListener('click', clearBet);
-        
-        btnDeal.addEventListener('click', startGame);
-        btnHit.addEventListener('click', hit);
-        btnStand.addEventListener('click', stand);
-        btnPlayAgain.addEventListener('click', resetTable);
+        btnDeal.addEventListener('click', startGame); btnHit.addEventListener('click', hit);
+        btnStand.addEventListener('click', stand); btnDouble.addEventListener('click', doubleDown);
+        document.getElementById('btn-play-again').addEventListener('click', resetTable);
         btnBailout.addEventListener('click', bailout);
+        
+        // 商店事件
+        document.getElementById('btn-open-shop').addEventListener('click', () => { if(!gameActive) shopModal.classList.add('show'); });
+        document.getElementById('btn-close-shop').addEventListener('click', () => shopModal.classList.remove('show'));
+        
+        btnBuyCards.addEventListener('click', () => {
+            if(!ownsGoldCards && bankroll >= 2000) { bankroll -= 2000; ownsGoldCards = true; updateFinanceUI(); }
+            if(ownsGoldCards) { usingGoldCards = !usingGoldCards; document.body.classList.toggle('cards-gold', usingGoldCards); updateShopUI(); }
+        });
+        btnBuyVIP.addEventListener('click', () => {
+            if(!ownsVIP && bankroll >= 5000) { bankroll -= 5000; ownsVIP = true; updateFinanceUI(); }
+            if(ownsVIP) { usingVIP = !usingVIP; document.body.classList.toggle('theme-vip', usingVIP); updateShopUI(); }
+        });
+
+        // 浮誇的 All In 邏輯
+        btnAllIn.addEventListener('click', () => {
+            if (bankroll > 0) {
+                addBet(bankroll);
+                gameBoard.classList.add('shake-active'); // 觸發劇烈震動
+                setTimeout(() => gameBoard.classList.remove('shake-active'), 400);
+                showMessage("ALL IN！破釜沉舟！", "lose"); // 用紅色字體顯示氣勢
+            }
+        });
+
+        // --- 直覺手勢操作 (滑動觸發，非釋放觸發) ---
+        let touchStartY = 0;
+        let swipeHandled = false;
+
+        gameBoard.addEventListener('touchstart', e => {
+            touchStartY = e.touches[0].clientY;
+            swipeHandled = false;
+        });
+
+        gameBoard.addEventListener('touchmove', e => {
+            // 只有在遊玩階段、且該次滑動還沒被處理過時才執行
+            if (!gameActive || swipeHandled) return; 
+            
+            let touchCurrentY = e.touches[0].clientY;
+            let diffY = touchStartY - touchCurrentY;
+
+            if (diffY > 50) { // 向上滑動 -> Hit
+                swipeHandled = true; // 立即標記已處理，不等待釋放 (Release)
+                hit();
+            } else if (diffY < -50) { // 向下滑動 -> Stand
+                swipeHandled = true; 
+                stand();
+            }
+        });
+
+        // --- 核心邏輯 ---
+        function updateShopUI() {
+            btnBuyCards.innerText = ownsGoldCards ? (usingGoldCards ? "卸下" : "裝備") : "$2,000";
+            btnBuyVIP.innerText = ownsVIP ? (usingVIP ? "卸下" : "裝備") : "$5,000";
+            btnBuyCards.style.background = ownsGoldCards ? "#10b981" : "#fbbf24";
+            btnBuyVIP.style.background = ownsVIP ? "#10b981" : "#fbbf24";
+        }
 
         function updateFinanceUI() {
-            bankrollDisplay.innerText = bankroll;
-            betDisplay.innerText = currentBet;
+            bankEl.innerText = bankroll; betEl.innerText = currentBet;
             btnDeal.disabled = currentBet === 0;
-            btnChip10.disabled = bankroll < 10;
-            btnChip50.disabled = bankroll < 50;
+            document.getElementById('btn-chip-10').disabled = bankroll < 10;
+            document.getElementById('btn-chip-50').disabled = bankroll < 50;
             btnAllIn.disabled = bankroll <= 0;
+            updateShopUI();
         }
 
-        function addBet(amount) {
-            if (bankroll >= amount) {
-                bankroll -= amount; currentBet += amount; updateFinanceUI(); playSound();
-            }
-        }
-
-        function clearBet() { bankroll += currentBet; currentBet = 0; updateFinanceUI(); }
-
-        function bailout() {
-            bankroll = 500; updateFinanceUI(); resetTable(); showMessage("東山再起！請下注。");
-        }
+        function addBet(amount) { if (bankroll >= amount) { bankroll -= amount; currentBet += amount; updateFinanceUI(); } }
+        function clearBet() { bankroll += currentBet; currentBet = 0; updateFinanceUI(); msgEl.innerText = "Place your bets!"; msgEl.className = "show"; }
+        function bailout() { bankroll = 500; updateFinanceUI(); resetTable(); showMessage("警衛把你踢回街上，你撿到了 $500！"); }
 
         function switchPanel(panelName) {
-            bettingPanel.classList.add('hidden-ui'); playingPanel.classList.add('hidden-ui');
-            gameoverPanel.classList.add('hidden-ui'); btnBailout.classList.add('hidden-ui');
+            pBetting.classList.add('hidden-ui'); pPlaying.classList.add('hidden-ui');
+            pGameover.classList.add('hidden-ui'); btnBailout.classList.add('hidden-ui');
+            document.getElementById('btn-open-shop').style.display = panelName === 'betting' ? 'block' : 'none';
 
-            if (panelName === 'betting') bettingPanel.classList.remove('hidden-ui');
-            if (panelName === 'playing') playingPanel.classList.remove('hidden-ui');
+            if (panelName === 'betting') pBetting.classList.remove('hidden-ui');
+            if (panelName === 'playing') pPlaying.classList.remove('hidden-ui');
             if (panelName === 'gameover') {
-                gameoverPanel.classList.remove('hidden-ui');
-                // 修復 Bug：只要 bankroll 是 0 就觸發破產，不論桌上籌碼
-                if (bankroll <= 0) {
-                    btnPlayAgain.classList.add('hidden-ui');
-                    btnBailout.classList.remove('hidden-ui'); 
-                } else {
-                    btnPlayAgain.classList.remove('hidden-ui');
-                }
+                pGameover.classList.remove('hidden-ui');
+                if (bankroll <= 0) { document.getElementById('btn-play-again').classList.add('hidden-ui'); btnBailout.classList.remove('hidden-ui'); }
+                else { document.getElementById('btn-play-again').classList.remove('hidden-ui'); }
             }
         }
 
-        function playSound() { betDisplay.style.transform = 'scale(1.2)'; setTimeout(() => betDisplay.style.transform = 'scale(1)', 150); }
-
         function showMessage(msg, type = 'normal') {
-            messageEl.classList.remove('show', 'win-text', 'lose-text'); messageEl.innerText = msg;
-            if (type === 'win') messageEl.classList.add('win-text');
-            if (type === 'lose') messageEl.classList.add('lose-text');
-            void messageEl.offsetWidth; messageEl.classList.add('show');
+            msgEl.className = ''; msgEl.innerText = msg;
+            if (type === 'win') msgEl.classList.add('win-text');
+            if (type === 'lose') msgEl.classList.add('lose-text');
+            void msgEl.offsetWidth; msgEl.classList.add('show');
         }
 
         function resetTable() {
-            dealerCardsEl.innerHTML = ''; playerCardsEl.innerHTML = '';
-            dealerScoreEl.innerText = '?'; playerScoreEl.innerText = '0';
-            currentBet = 0; updateFinanceUI(); switchPanel('betting');
-            showMessage("Place your bets!"); messageEl.classList.remove('win-text', 'lose-text');
+            dCardsEl.innerHTML = ''; pCardsEl.innerHTML = ''; dScoreEl.innerText = '?'; pScoreEl.innerText = '0';
+            currentBet = 0; updateFinanceUI(); switchPanel('betting'); showMessage("Place your bets!"); swipeHint.classList.remove('show');
         }
 
         function createDeck() {
-            deck = [];
-            for (let s of suits) for (let v of values) deck.push({ suit: s, value: v });
+            deck = []; for (let s of suits) for (let v of values) deck.push({ suit: s, value: v });
             for (let i = deck.length - 1; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
         }
 
-        function calculateScore(cards) {
+        function calcScore(cards) {
             let score = 0, aces = 0;
             for (let c of cards) {
                 if (['J', 'Q', 'K'].includes(c.value)) score += 10;
@@ -269,69 +400,108 @@
         function startGame() {
             if (currentBet === 0) return; 
             switchPanel('playing'); createDeck();
-            dealerCards = [deck.pop(), deck.pop()]; playerCards = [deck.pop(), deck.pop()]; gameActive = true;
-            btnHit.disabled = false; btnStand.disabled = false; showMessage("Good Luck!");
+            dealerCards = [deck.pop(), deck.pop()]; playerCards = [deck.pop(), deck.pop()]; 
+            gameActive = true; isFirstTurn = true;
+            btnHit.disabled = false; btnStand.disabled = false;
+            
+            // 檢查是否夠錢 Double Down
+            btnDouble.disabled = bankroll < currentBet; 
+
+            showMessage("Good Luck!");
+            swipeHint.classList.add('show');
 
             playerCards.forEach((c, i) => setTimeout(() => {
-                const cardUI = createCardUI(c); playerCardsEl.appendChild(cardUI);
-                setTimeout(() => cardUI.classList.add('deal'), 20); playerScoreEl.innerText = calculateScore(playerCards);
+                const cardUI = createCardUI(c); pCardsEl.appendChild(cardUI);
+                setTimeout(() => cardUI.classList.add('deal'), 20); pScoreEl.innerText = calcScore(playerCards);
             }, i * 350));
 
             dealerCards.forEach((c, i) => setTimeout(() => {
-                const cardUI = createCardUI(c, i === 0); dealerCardsEl.appendChild(cardUI);
-                setTimeout(() => cardUI.classList.add('deal'), 20);
-                dealerScoreEl.innerText = i === 1 ? calculateScore([dealerCards[1]]) : '?';
+                const cardUI = createCardUI(c, i === 0); dCardsEl.appendChild(cardUI);
+                setTimeout(() => cardUI.classList.add('deal'), 20); dScoreEl.innerText = i === 1 ? calcScore([dealerCards[1]]) : '?';
             }, i * 350 + 700));
 
-            setTimeout(() => { if (calculateScore(playerCards) === 21) processPayout('blackjack'); }, 1800);
+            setTimeout(() => { if (calcScore(playerCards) === 21) processPayout('blackjack'); }, 1800);
         }
 
         function hit() {
             if (!gameActive) return;
+            isFirstTurn = false; btnDouble.disabled = true; // 只要 Hit 過就不能 Double Down
+            
             const newCard = deck.pop(); playerCards.push(newCard);
-            const cardUI = createCardUI(newCard); playerCardsEl.appendChild(cardUI);
+            const cardUI = createCardUI(newCard); pCardsEl.appendChild(cardUI);
             setTimeout(() => cardUI.classList.add('deal'), 20);
-            const score = calculateScore(playerCards); playerScoreEl.innerText = score;
+            const score = calcScore(playerCards); pScoreEl.innerText = score;
             if (score > 21) processPayout('bust');
+        }
+
+        // 雙倍下注邏輯
+        function doubleDown() {
+            if (!gameActive || !isFirstTurn || bankroll < currentBet) return;
+            
+            // 扣除並加倍下注
+            bankroll -= currentBet;
+            currentBet *= 2;
+            updateFinanceUI();
+            
+            // 只能發一張牌
+            const newCard = deck.pop(); playerCards.push(newCard);
+            const cardUI = createCardUI(newCard); pCardsEl.appendChild(cardUI);
+            setTimeout(() => cardUI.classList.add('deal'), 20);
+            pScoreEl.innerText = calcScore(playerCards);
+
+            // 發完強制結束回合
+            if (calcScore(playerCards) > 21) {
+                setTimeout(() => processPayout('bust'), 500);
+            } else {
+                setTimeout(stand, 500);
+            }
         }
 
         async function stand() {
             if (!gameActive) return;
-            gameActive = false; btnHit.disabled = true; btnStand.disabled = true;
+            gameActive = false; btnHit.disabled = true; btnStand.disabled = true; btnDouble.disabled = true;
+            swipeHint.classList.remove('show');
 
-            const firstCardUI = dealerCardsEl.firstChild; firstCardUI.classList.remove('hidden');
-            firstCardUI.innerHTML = `${dealerCards[0].suit}<br>${dealerCards[0].value}`; dealerScoreEl.innerText = calculateScore(dealerCards);
+            const firstCardUI = dCardsEl.firstChild; firstCardUI.classList.remove('hidden');
+            firstCardUI.innerHTML = `${dealerCards[0].suit}<br>${dealerCards[0].value}`; dScoreEl.innerText = calcScore(dealerCards);
 
-            await new Promise(r => setTimeout(r, 1200));
+            await new Promise(r => setTimeout(r, 1000));
 
-            let dealerScore = calculateScore(dealerCards);
+            let dealerScore = calcScore(dealerCards);
             while (dealerScore < 17) {
                 const newCard = deck.pop(); dealerCards.push(newCard);
-                const cardUI = createCardUI(newCard); dealerCardsEl.appendChild(cardUI);
+                const cardUI = createCardUI(newCard); dCardsEl.appendChild(cardUI);
                 setTimeout(() => cardUI.classList.add('deal'), 20);
-                dealerScore = calculateScore(dealerCards); dealerScoreEl.innerText = dealerScore;
-                await new Promise(r => setTimeout(r, 1200));
+                dealerScore = calcScore(dealerCards); dScoreEl.innerText = dealerScore;
+                await new Promise(r => setTimeout(r, 1000));
             }
 
-            const playerScore = calculateScore(playerCards);
+            const playerScore = calcScore(playerCards);
             setTimeout(() => {
                 if (dealerScore > 21) processPayout('win', "莊家爆牌！贏得 $");
                 else if (dealerScore > playerScore) processPayout('lose', "莊家點數大。輸了 $");
                 else if (dealerScore < playerScore) processPayout('win', "你贏了！獲得 $");
                 else processPayout('push', "雙方平手 (Push)");
-            }, 600);
+            }, 500);
         }
 
         function processPayout(result, customMsg = "") {
-            gameActive = false; let winAmount = 0;
-            if (result === 'blackjack') { winAmount = currentBet * 2.5; bankroll += winAmount; showMessage(`Blackjack 21點！贏得 $${winAmount}!`, 'win'); } 
+            gameActive = false; swipeHint.classList.remove('show'); let winAmount = 0;
+            if (result === 'blackjack') { winAmount = currentBet * 2.5; bankroll += winAmount; showMessage(`Blackjack！贏得 $${winAmount}!`, 'win'); } 
             else if (result === 'win') { winAmount = currentBet * 2; bankroll += winAmount; showMessage(`${customMsg}${winAmount}!`, 'win'); } 
             else if (result === 'push') { bankroll += currentBet; showMessage(customMsg); } 
-            else if (result === 'bust') { showMessage(`爆牌了！輸掉 $${currentBet}`, 'lose'); }
-            else if (result === 'lose') { showMessage(`${customMsg}${currentBet}`, 'lose'); }
+            else if (result === 'bust') { 
+                // 加入破產幽默提示
+                if(bankroll === 0) showMessage(`爆牌！你被警衛丟出去了！輸掉 $${currentBet}`, 'lose');
+                else showMessage(`爆牌了！輸掉 $${currentBet}`, 'lose'); 
+            }
+            else if (result === 'lose') { 
+                if(bankroll === 0) showMessage(`破產！警衛把你架了出去！輸了 $${currentBet}`, 'lose');
+                else showMessage(`${customMsg}${currentBet}`, 'lose'); 
+            }
 
-            dealerScoreEl.innerText = calculateScore(dealerCards); updateFinanceUI();
-            setTimeout(() => { switchPanel('gameover'); }, 1000);
+            dScoreEl.innerText = calcScore(dealerCards); updateFinanceUI();
+            setTimeout(() => { switchPanel('gameover'); }, 1200);
         }
 
         updateFinanceUI(); switchPanel('betting');
