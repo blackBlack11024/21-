@@ -40,7 +40,6 @@
             white-space: nowrap; 
         }
         .finance-item span { color: #fbbf24; }
-        .finance-item span.highlight { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
 
         h2 { font-weight: 500; margin: 0; font-size: clamp(14px, 2.2vh, 18px); color: #94a3b8; letter-spacing: 2px; }
         h2 span { color: #e2e8f0; font-weight: 700; margin-left: 5px; }
@@ -69,27 +68,40 @@
         #swipe-hint.show { opacity: 1; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); } 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); } }
 
+        /* ============================
+           完美對齊的滑桿與標籤
+           ============================ */
         .slider-wrapper {
             width: 100%;
             padding: 5px 10px;
             box-sizing: border-box;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .slider-labels {
-            display: flex;
-            justify-content: space-between;
+            position: relative;
+            height: 20px;
+            margin-bottom: 10px;
+            /* 扣除滑塊寬度 34px，讓兩端點完美對齊滑塊圓心 */
+            width: calc(100% - 34px); 
+            margin-left: 17px; 
+        }
+
+        .slider-labels span {
+            position: absolute;
+            top: 0;
+            transform: translateX(-50%);
             color: #94a3b8;
             font-size: 12px;
             font-weight: 700;
-            margin-bottom: 15px;
-            padding: 0 5px;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .slider-labels span.active-snap {
             color: #fbbf24;
-            transform: scale(1.2);
-            transition: all 0.2s;
+            transform: translateX(-50%) scale(1.2);
+            z-index: 2;
         }
 
         input[type=range] {
@@ -190,11 +202,12 @@
             <div id="betting-panel">
                 <div class="slider-wrapper">
                     <div class="slider-labels" id="slider-labels">
-                        <span data-val="0">0</span>
-                        <span data-val="25">25</span>
-                        <span data-val="50">50</span>
-                        <span data-val="75">75</span>
-                        <span data-val="100">ALL IN</span>
+                        <!-- 使用絕對定位設定完美百分比位置 -->
+                        <span style="left: 0%;">0</span>
+                        <span style="left: 25%;">25</span>
+                        <span style="left: 50%;">50</span>
+                        <span style="left: 75%;">75</span>
+                        <span style="left: 100%;">ALL IN</span>
                     </div>
                     <input type="range" id="bet-slider" min="0" max="1000" step="10" value="0">
                 </div>
