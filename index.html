@@ -3,90 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>21點 網路遊戲</title>
+    <title>極簡 21點 (附動畫)</title>
     <style>
+        /* ============================
+           1. 現代、極簡風格 CSS (Flat UI)
+           ============================ */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #2b7a0b; /* 經典賭桌綠色 */
-            color: white;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #1a1a1a; /* 深灰色背景 */
+            color: #ecf0f1;
             text-align: center;
             margin: 0;
             padding: 20px;
         }
+
         #game-board {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #3b9a1b;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background-color: #262626; /* 稍微亮一點的區塊 background */
+            padding: 30px;
+            border-radius: 12px; /* 圓角化 */
+            box-shadow: none; /* 去除陰影 */
         }
+
+        h1 {
+            font-weight: 300;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-weight: 400;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #bdc3c7;
+        }
+
         .cards-container {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            min-height: 140px;
+            gap: 12px; /* 卡片間距 */
+            min-height: 160px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            align-items: flex-start; /* 重要：讓動畫從上往下滑動更自然 */
         }
+
+        /* ============================
+           2. 核心：卡片動畫 CSS
+           ============================ */
         .card {
-            width: 90px;
-            height: 130px;
-            background-color: white;
-            color: black;
-            border-radius: 8px;
+            /* 基礎扁平化樣式 */
+            width: 100px;
+            height: 140px;
+            background-color: #fff;
+            color: #000;
+            border-radius: 6px; /* 更圓潤 */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #ccc;
             position: relative;
+            
+            /* ====================
+               動畫起點：預設狀態
+               ==================== */
+            opacity: 0; /* 預設不可見 */
+            transform: translateY(-50px) scale(0.5); /* 初始位置在上方，且縮小 */
+            
+            /* ====================
+               動畫核心：定義過渡效果
+               ==================== */
+            transition: all 0.4s ease-out; /* 所有屬性、0.4秒內、流暢淡出 */
         }
+
+        /* 紅色花色 */
         .card.red {
-            color: #d32f2f;
+            color: #e74c3c;
         }
+
+        /* 隱藏的卡片 (撲克牌背面) - 乾淨的藍色背景 */
         .card.hidden {
-            background-color: #1a1a1a;
-            background-image: repeating-linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333), repeating-linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333);
-            background-position: 0 0, 10px 10px;
-            background-size: 20px 20px;
-            color: transparent;
+            background-color: #34495e; 
+            border: 2px solid white;
+            color: transparent !important;
         }
+        
+        /* 防止隱藏牌顯示文字內容 */
+        .card.hidden * {
+            visibility: hidden;
+        }
+
+        /* ============================
+           動畫終點：當卡片被加入 'deal' class 時
+           ============================ */
+        .card.deal {
+            opacity: 1; /* 變為可見 */
+            transform: translateY(0) scale(1); /* 滑動到正常位置，放大到原尺寸 */
+        }
+
         .controls {
-            margin-top: 20px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
-            margin: 0 5px;
             cursor: pointer;
             border: none;
-            border-radius: 5px;
-            background-color: #f1c40f;
-            color: #333;
+            border-radius: 6px;
             font-weight: bold;
-            transition: 0.2s;
+            transition: all 0.2s ease; /* 按鈕懸停動畫 */
         }
+
+        /* 扁平化按鈕顏色 */
+        button#btn-start { background-color: #2ecc71; color: white; }
+        button#btn-hit { background-color: #3498db; color: white; }
+        button#btn-stand { background-color: #e67e22; color: white; }
+        
         button:hover:not(:disabled) {
-            background-color: #f39c12;
+            opacity: 0.8;
+            transform: translateY(-2px); /* 懸停時稍微浮起 */
         }
+
+        button:active:not(:disabled) {
+            transform: translateY(1px); /* 點擊時下壓 */
+        }
+
         button:disabled {
-            background-color: #ccc;
+            background-color: #95a5a6 !important;
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.5;
         }
+
+        /* 結果訊息動畫 */
         #message {
-            font-size: 20px;
+            font-size: 22px;
             margin-top: 20px;
             min-height: 30px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s ease-in; /* 結果出現動畫 */
+        }
+
+        #message.show {
+            opacity: 1;
+            transform: scale(1.1); /* 結果帶有一點點放大效果 */
+        }
+        
+        #message.show.reset {
+             transform: scale(1);
+             transition: none; /* 重新開始時立刻消失 */
         }
     </style>
 </head>
 <body>
 
     <div id="game-board">
-        <h1>♠♥ 21點 ♣♦</h1>
+        <h1>21點</h1>
         
         <h2>莊家 (<span id="dealer-score">?</span>)</h2>
         <div id="dealer-cards" class="cards-container"></div>
@@ -94,12 +175,12 @@
         <h2>玩家 (<span id="player-score">0</span>)</h2>
         <div id="player-cards" class="cards-container"></div>
 
-        <div id="message">點擊「開始遊戲」來發牌！</div>
+        <div id="message"></div>
 
         <div class="controls">
-            <button id="btn-hit" disabled>要牌 (Hit)</button>
+            <button id="btn-hit" disabled>你要牌 (Hit)</button>
             <button id="btn-stand" disabled>停牌 (Stand)</button>
-            <button id="btn-start">開始遊戲</button>
+            <button id="btn-start">開始</button>
         </div>
     </div>
 
@@ -122,12 +203,10 @@
         const btnStand = document.getElementById('btn-stand');
         const btnStart = document.getElementById('btn-start');
 
-        // 綁定按鈕事件
         btnStart.addEventListener('click', startGame);
         btnHit.addEventListener('click', hit);
         btnStand.addEventListener('click', stand);
 
-        // 建立並洗牌
         function createDeck() {
             deck = [];
             for (let suit of suits) {
@@ -135,14 +214,12 @@
                     deck.push({ suit, value });
                 }
             }
-            // Fisher-Yates 洗牌演算法
             for (let i = deck.length - 1; i > 0; i--) {
                 let j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
             }
         }
 
-        // 計算手牌點數
         function calculateScore(cards) {
             let score = 0;
             let aces = 0;
@@ -157,8 +234,6 @@
                     score += parseInt(card.value);
                 }
             }
-
-            // 處理 A 的點數 (超過 21 點時，A 當作 1 點)
             while (score > 21 && aces > 0) {
                 score -= 10;
                 aces -= 1;
@@ -166,43 +241,73 @@
             return score;
         }
 
-        // 渲染卡片 UI
-        function renderCards(cards, element, hideFirst = false) {
-            element.innerHTML = '';
-            cards.forEach((card, index) => {
-                const cardDiv = document.createElement('div');
-                cardDiv.classList.add('card');
-                
-                // 如果是紅心或方塊，加上紅色樣式
-                if (card.suit === '♥' || card.suit === '♦') {
-                    cardDiv.classList.add('red');
-                }
+        /* ============================
+           3. 核心：JS加入卡片與觸發動畫
+           ============================ */
+        function addCardDOM(card, container, isHidden = false, index = 0, totalCards = 0) {
+            // 1. 建立 DOM 元素
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('card');
+            
+            if (card.suit === '♥' || card.suit === '♦') {
+                cardDiv.classList.add('red');
+            }
 
-                if (hideFirst && index === 0) {
-                    cardDiv.classList.add('hidden');
-                } else {
-                    cardDiv.innerHTML = `${card.suit}<br>${card.value}`;
-                }
-                element.appendChild(cardDiv);
-            });
+            if (isHidden) {
+                cardDiv.classList.add('hidden');
+                cardDiv.innerHTML = `??<br>?`; // 底牌內容
+            } else {
+                cardDiv.innerHTML = `${card.suit}<br>${card.value}`;
+            }
+
+            // 2. 先將元素加入 container (此時 DOM 已經有了，但卡片是 invisible 的)
+            container.appendChild(cardDiv);
+
+            // 3. 關鍵：使用 setTimeout 產生一點延遲，讓瀏覽器捕捉到 transition
+            // 這裡使用了乘數 (totalCards - index) 讓牌能「逐張」滑入，而不是全部同時
+            const delay = 50 + (totalCards - index) * 150; // 越晚加的牌延遲越短，形成逐張出現的效果
+
+            setTimeout(() => {
+                cardDiv.classList.add('deal'); // 加入此 class，觸發 CSS transition 動畫
+            }, delay);
         }
 
-        // 更新畫面分數與卡片
         function updateUI(dealerHidden = true) {
-            renderCards(playerCards, playerCardsEl);
-            renderCards(dealerCards, dealerCardsEl, dealerHidden);
+            // 先只重置容器
+            playerCardsEl.innerHTML = '';
+            dealerCardsEl.innerHTML = '';
 
+            // 計算玩家分數並顯示
             playerScoreEl.innerText = calculateScore(playerCards);
             
             if (dealerHidden) {
-                // 莊家蓋牌時，只計算第二張牌的分數
                 dealerScoreEl.innerText = dealerCards.length > 1 ? calculateScore([dealerCards[1]]) : '?';
             } else {
                 dealerScoreEl.innerText = calculateScore(dealerCards);
             }
+
+            // [同步加入 DOM 但不同步觸發動畫]
+            // 為了解決重新開始時動畫重複的問題，這裡使用遞迴逐張加入卡片 DOM
+            function dealCardsWithAnimation(cards, container, hideFirstCard = false) {
+                const total = cards.length;
+                cards.forEach((card, index) => {
+                    const isCardHidden = (hideFirstCard && index === 0);
+                    // 注意：這裡是將 `index` 傳給 DOM 函數，以計算延遲
+                    addCardDOM(card, container, isCardHidden, index, total);
+                });
+            }
+
+            // 處理玩家卡片
+            dealCardsWithAnimation(playerCards, playerCardsEl);
+            // 處理莊家卡片
+            dealCardsWithAnimation(dealerCards, dealerCardsEl, dealerHidden);
+        }
+        
+        // 專門用於 "Hit" 的函數：只添加一張新牌 DOM，不重新更新全部
+        function addNewCardToDOM(card, container, totalIndex) {
+            addCardDOM(card, container, false, totalIndex-1, totalIndex);
         }
 
-        // 開始新遊戲
         function startGame() {
             createDeck();
             dealerCards = [deck.pop(), deck.pop()];
@@ -212,65 +317,84 @@
             btnHit.disabled = false;
             btnStand.disabled = false;
             btnStart.innerText = '重新開始';
-            messageEl.innerText = '你要補牌還是停牌？';
+            
+            // 訊息重置動畫
+            messageEl.classList.remove('show');
+            messageEl.innerText = '補牌還是停牌？';
+            setTimeout(() => {
+                messageEl.classList.add('show');
+            }, 100);
 
+            // 第一次更新 UI (會逐張發牌)
             updateUI(true);
 
-            // 檢查玩家是否一開始就 21 點 (Blackjack)
             if (calculateScore(playerCards) === 21) {
-                endGame("玩家 21 點 (Blackjack)！你贏了！");
+                endGame("玩家 21 點 (Blackjack)！贏了！");
             }
         }
 
-        // 玩家要牌
         function hit() {
             if (!gameActive) return;
             
-            playerCards.push(deck.pop());
-            updateUI(true);
+            const newCard = deck.pop();
+            playerCards.push(newCard);
+            
+            // 不要重新 updateUI 全部，而是只將新卡片加入 DOM
+            playerScoreEl.innerText = calculateScore(playerCards); // 更新分數
+            addNewCardToDOM(newCard, playerCardsEl, playerCards.length); // 觸發單張牌滑入動畫
 
             if (calculateScore(playerCards) > 21) {
-                endGame("玩家爆牌 (Bust)！莊家獲勝。");
+                endGame("爆牌 (Bust)！莊家獲勝。");
             }
         }
 
-        // 玩家停牌，換莊家回合
         function stand() {
             if (!gameActive) return;
             gameActive = false;
             btnHit.disabled = true;
             btnStand.disabled = true;
 
-            // 莊家規則：點數小於 17 必須補牌
+            // 莊家補牌 (無動畫，直到完成)
             let dealerScore = calculateScore(dealerCards);
             while (dealerScore < 17) {
                 dealerCards.push(deck.pop());
                 dealerScore = calculateScore(dealerCards);
             }
 
-            updateUI(false); // 翻開莊家底牌
+            // 翻牌與最終結算 (會顯示所有牌滑入動畫，並且翻開底牌)
+            updateUI(false); 
 
-            const playerScore = calculateScore(playerCards);
-            
-            // 判斷勝負
-            if (dealerScore > 21) {
-                endGame("莊家爆牌！你贏了！");
-            } else if (dealerScore > playerScore) {
-                endGame("莊家點數較大，莊家獲勝。");
-            } else if (dealerScore < playerScore) {
-                endGame("玩家點數較大，你贏了！");
-            } else {
-                endGame("雙方平手 (Push)！");
-            }
+            setTimeout(() => {
+                const playerScore = calculateScore(playerCards);
+                // 判斷勝負並顯示訊息動畫
+                if (dealerScore > 21) {
+                    endGame("莊家爆牌！你贏了！");
+                } else if (dealerScore > playerScore) {
+                    endGame("莊家獲勝。");
+                } else if (dealerScore < playerScore) {
+                    endGame("你贏了！");
+                } else {
+                    endGame("平手 (Push)！");
+                }
+            }, 1000); // 稍微延遲再顯示結果，等發牌動畫結束
         }
 
-        // 結束遊戲並顯示訊息
         function endGame(msg) {
             gameActive = false;
             btnHit.disabled = true;
             btnStand.disabled = true;
+            
+            // 顯示結果訊息動畫
+            messageEl.classList.remove('show');
             messageEl.innerText = msg;
-            updateUI(false); // 確保結算時底牌是翻開的
+            setTimeout(() => {
+                messageEl.classList.add('show');
+            }, 100); // 結果帶有一點 popping
+
+            // 不要重新 updateUI，只需確保莊家底牌被翻開（如果未翻開）
+            if (dealerScoreEl.innerText === '?') {
+                updateUI(false); // 翻開底牌並計算總分
+            }
         }
     </script>
 </body>
