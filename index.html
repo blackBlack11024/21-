@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>極簡 21點 - 全螢幕不滑動版</title>
+    <title>21點</title>
+    <!-- 引入高質感的現代字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ============================
-           滿版不滑動核心設定
-           ============================ */
         body {
-            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            background-color: #1a1a1a;
-            color: #ecf0f1;
+            font-family: 'Montserrat', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            /* 現代深邃漸層背景 */
+            background: linear-gradient(135deg, #0f172a 0%, #1e1e2f 50%, #000000 100%);
+            color: #f8fafc;
             text-align: center;
             margin: 0;
             padding: 0;
-            /* 使用 100dvh 自動適應手機瀏覽器的上下網址列 */
             height: 100vh; 
             height: 100dvh; 
-            overflow: hidden; /* 強制隱藏所有卷軸 */
+            overflow: hidden; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -28,132 +27,181 @@
             width: 100%;
             max-width: 600px;
             height: 100%;
-            max-height: 800px;
-            background-color: #262626;
-            border-radius: 0; /* 在手機上滿版不需要圓角 */
+            max-height: 850px;
+            /* 琉璃擬態 Glassmorphism 設計 */
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0; 
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly; /* 讓內部元素自動均分垂直空間 */
-            padding: 2vh 4vw;
+            justify-content: space-evenly; 
+            padding: 3vh 4vw;
             box-sizing: border-box;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         @media (min-width: 600px) {
             #game-board {
-                height: 95%; /* 在電腦螢幕上保留一點上下邊距 */
-                border-radius: 12px;
+                height: 96%; 
+                border-radius: 24px;
             }
         }
 
-        /* 文字大小也會隨著螢幕高度動態調整 (clamp 確保不會太小或太大) */
         h1 { 
             font-weight: 300; 
             margin: 0; 
-            letter-spacing: 2px; 
-            font-size: clamp(24px, 4vh, 32px);
+            letter-spacing: 6px; 
+            font-size: clamp(26px, 4.5vh, 36px);
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
         }
+        
         h2 { 
-            font-weight: 400; 
+            font-weight: 500; 
             margin: 0; 
-            font-size: clamp(16px, 2.5vh, 20px); 
-            color: #bdc3c7; 
+            font-size: clamp(15px, 2.5vh, 18px); 
+            color: #94a3b8; 
+            letter-spacing: 2px;
+        }
+        
+        /* 分數的特別強調 */
+        h2 span {
+            color: #e2e8f0;
+            font-weight: 700;
         }
 
         .cards-container {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
             align-content: center;
-            /* 讓發牌區塊能自動伸展填補空間 */
             flex-grow: 1; 
-            min-height: clamp(100px, 18vh, 150px);
+            min-height: clamp(110px, 20vh, 160px);
         }
 
-        /* 卡片大小根據視窗高度 (vh) 自動縮放 */
+        /* 更精緻的撲克牌比例與質感 */
         .card {
-            height: clamp(80px, 15vh, 130px);
-            width: clamp(60px, 11vh, 95px);
-            background-color: #fff;
-            color: #000;
-            border-radius: 6px;
+            height: clamp(90px, 16vh, 140px);
+            width: clamp(65px, 11.5vh, 100px);
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            color: #0f172a;
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: clamp(20px, 3.5vh, 32px);
-            font-weight: bold;
-            border: 1px solid #ccc;
+            font-size: clamp(22px, 4vh, 36px);
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.5);
             opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.5s ease;
+            transform: translateY(-30px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 更有彈性的動畫 */
         }
 
-        .card.red { color: #e74c3c; }
+        .card.red { color: #f43f5e; }
 
+        /* 高質感的牌背設計 */
         .card.hidden {
-            background-color: #34495e; 
-            border: 2px solid white;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border: 2px solid rgba(255,255,255,0.2);
             color: transparent !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
 
         .card.deal {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: clamp(12px, 3vw, 20px);
             margin-bottom: 2vh;
+            margin-top: 1vh;
         }
 
+        /* 現代感膠囊按鈕 */
         button {
-            padding: clamp(10px, 2vh, 15px) clamp(15px, 4vw, 28px);
-            font-size: clamp(14px, 2.2vh, 18px);
+            padding: clamp(12px, 2.5vh, 18px) clamp(20px, 5vw, 36px);
+            font-size: clamp(15px, 2.5vh, 18px);
             cursor: pointer;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: all 0.2s;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: white;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
         }
 
-        button#btn-start { background-color: #2ecc71; color: white; }
-        button#btn-hit { background-color: #3498db; color: white; }
-        button#btn-stand { background-color: #e67e22; color: white; }
+        button#btn-start { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        button#btn-hit { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        button#btn-stand { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
         
-        button:hover:not(:disabled) { opacity: 0.8; }
-        button:disabled { background-color: #555 !important; color: #888; cursor: not-allowed; }
-
-        #message {
-            font-size: clamp(18px, 3vh, 24px);
-            min-height: clamp(25px, 4vh, 35px);
-            font-weight: bold;
-            color: #f1c40f;
-            opacity: 0;
-            transition: opacity 0.5s;
-            margin: 1vh 0;
+        /* 懸停發光效果 */
+        button:hover:not(:disabled) { 
+            transform: translateY(-3px);
         }
-        #message.show { opacity: 1; }
+        button#btn-start:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
+        button#btn-hit:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6); }
+        button#btn-stand:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6); }
+
+        button:disabled { 
+            background: rgba(255, 255, 255, 0.1) !important; 
+            color: rgba(255, 255, 255, 0.3); 
+            box-shadow: none !important;
+            cursor: not-allowed; 
+        }
+
+        /* 結果提示文字 */
+        #message {
+            font-size: clamp(18px, 3vh, 26px);
+            min-height: clamp(28px, 4.5vh, 40px);
+            font-weight: 500;
+            color: #fcd34d;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: 1vh 0;
+            text-shadow: 0 2px 10px rgba(252, 211, 77, 0.3);
+        }
+        #message.show { 
+            opacity: 1; 
+            transform: scale(1);
+        }
     </style>
 </head>
 <body>
 
     <div id="game-board">
-        <h1>21點</h1>
+        <h1>Blackjack</h1>
         
-        <h2>莊家 (<span id="dealer-score">?</span>)</h2>
+        <h2>莊家 <span>(<span id="dealer-score">?</span>)</span></h2>
         <div id="dealer-cards" class="cards-container"></div>
 
         <div id="message"></div>
 
-        <h2>玩家 (<span id="player-score">0</span>)</h2>
+        <h2>玩家 <span>(<span id="player-score">0</span>)</span></h2>
         <div id="player-cards" class="cards-container"></div>
 
         <div class="controls">
-            <button id="btn-hit" disabled>你要牌</button>
-            <button id="btn-stand" disabled>停牌</button>
-            <button id="btn-start">開始</button>
+            <button id="btn-hit" disabled>Hit</button>
+            <button id="btn-stand" disabled>Stand</button>
+            <button id="btn-start">Play</button>
         </div>
     </div>
 
@@ -201,7 +249,6 @@
             div.className = 'card' + (card.suit === '♥' || card.suit === '♦' ? ' red' : '');
             if (isHidden) {
                 div.classList.add('hidden');
-                div.innerHTML = '??';
             } else {
                 div.innerHTML = `${card.suit}<br>${card.value}`;
             }
@@ -222,27 +269,28 @@
             dealerCardsEl.innerHTML = '';
             playerCardsEl.innerHTML = '';
             messageEl.classList.remove('show');
-            btnStart.innerText = '重新開始';
+            btnStart.innerText = 'Play Again';
             btnHit.disabled = false;
             btnStand.disabled = false;
 
+            // 稍微調整動畫延遲，配合新的彈性動畫
             playerCards.forEach((c, i) => setTimeout(() => {
                 const cardUI = createCardUI(c);
                 playerCardsEl.appendChild(cardUI);
-                setTimeout(() => cardUI.classList.add('deal'), 10);
+                setTimeout(() => cardUI.classList.add('deal'), 20);
                 playerScoreEl.innerText = calculateScore(playerCards);
-            }, i * 300));
+            }, i * 350));
 
             dealerCards.forEach((c, i) => setTimeout(() => {
                 const cardUI = createCardUI(c, i === 0);
                 dealerCardsEl.appendChild(cardUI);
-                setTimeout(() => cardUI.classList.add('deal'), 10);
+                setTimeout(() => cardUI.classList.add('deal'), 20);
                 dealerScoreEl.innerText = i === 1 ? calculateScore([dealerCards[1]]) : '?';
-            }, i * 300 + 600));
+            }, i * 350 + 700));
 
             setTimeout(() => {
                 if (calculateScore(playerCards) === 21) endGame("玩家 21 點！贏了！");
-            }, 1500);
+            }, 1800);
         }
 
         function hit() {
@@ -251,7 +299,7 @@
             playerCards.push(newCard);
             const cardUI = createCardUI(newCard);
             playerCardsEl.appendChild(cardUI);
-            setTimeout(() => cardUI.classList.add('deal'), 10);
+            setTimeout(() => cardUI.classList.add('deal'), 20);
             
             const score = calculateScore(playerCards);
             playerScoreEl.innerText = score;
@@ -269,7 +317,7 @@
             firstCardUI.innerHTML = `${dealerCards[0].suit}<br>${dealerCards[0].value}`;
             dealerScoreEl.innerText = calculateScore(dealerCards);
 
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 1200));
 
             let dealerScore = calculateScore(dealerCards);
             while (dealerScore < 17) {
@@ -277,12 +325,12 @@
                 dealerCards.push(newCard);
                 const cardUI = createCardUI(newCard);
                 dealerCardsEl.appendChild(cardUI);
-                setTimeout(() => cardUI.classList.add('deal'), 10);
+                setTimeout(() => cardUI.classList.add('deal'), 20);
                 
                 dealerScore = calculateScore(dealerCards);
                 dealerScoreEl.innerText = dealerScore;
                 
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 1200)); // 配合更優雅的動畫，把懸念時間稍微拉長一點點
             }
 
             const playerScore = calculateScore(playerCards);
@@ -291,7 +339,7 @@
                 else if (dealerScore > playerScore) endGame("莊家點數較大，你輸了。");
                 else if (dealerScore < playerScore) endGame("你贏了！");
                 else endGame("雙方平手！");
-            }, 500);
+            }, 600);
         }
 
         function endGame(msg) {
