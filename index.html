@@ -2,81 +2,115 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>極簡 21點 - 懸念版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>極簡 21點 - 全螢幕不滑動版</title>
     <style>
+        /* ============================
+           滿版不滑動核心設定
+           ============================ */
         body {
             font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
             background-color: #1a1a1a;
             color: #ecf0f1;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            /* 使用 100dvh 自動適應手機瀏覽器的上下網址列 */
+            height: 100vh; 
+            height: 100dvh; 
+            overflow: hidden; /* 強制隱藏所有卷軸 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #game-board {
+            width: 100%;
             max-width: 600px;
-            margin: 0 auto;
+            height: 100%;
+            max-height: 800px;
             background-color: #262626;
-            padding: 30px;
-            border-radius: 12px;
+            border-radius: 0; /* 在手機上滿版不需要圓角 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly; /* 讓內部元素自動均分垂直空間 */
+            padding: 2vh 4vw;
+            box-sizing: border-box;
         }
 
-        h1 { font-weight: 300; margin-bottom: 30px; letter-spacing: 2px; }
-        h2 { font-weight: 400; margin-top: 20px; font-size: 18px; color: #bdc3c7; }
+        @media (min-width: 600px) {
+            #game-board {
+                height: 95%; /* 在電腦螢幕上保留一點上下邊距 */
+                border-radius: 12px;
+            }
+        }
+
+        /* 文字大小也會隨著螢幕高度動態調整 (clamp 確保不會太小或太大) */
+        h1 { 
+            font-weight: 300; 
+            margin: 0; 
+            letter-spacing: 2px; 
+            font-size: clamp(24px, 4vh, 32px);
+        }
+        h2 { 
+            font-weight: 400; 
+            margin: 0; 
+            font-size: clamp(16px, 2.5vh, 20px); 
+            color: #bdc3c7; 
+        }
 
         .cards-container {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            min-height: 160px;
-            margin-bottom: 20px;
+            gap: 10px;
             flex-wrap: wrap;
+            align-content: center;
+            /* 讓發牌區塊能自動伸展填補空間 */
+            flex-grow: 1; 
+            min-height: clamp(100px, 18vh, 150px);
         }
 
-        /* 卡片基礎樣式與動畫 */
+        /* 卡片大小根據視窗高度 (vh) 自動縮放 */
         .card {
-            width: 100px;
-            height: 140px;
+            height: clamp(80px, 15vh, 130px);
+            width: clamp(60px, 11vh, 95px);
             background-color: #fff;
             color: #000;
             border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 32px;
+            font-size: clamp(20px, 3.5vh, 32px);
             font-weight: bold;
             border: 1px solid #ccc;
             opacity: 0;
             transform: translateY(-20px);
-            transition: all 0.5s ease; /* 稍微變慢一點點 */
+            transition: all 0.5s ease;
         }
 
         .card.red { color: #e74c3c; }
 
-        /* 蓋住的底牌樣式 */
         .card.hidden {
             background-color: #34495e; 
             border: 2px solid white;
             color: transparent !important;
         }
 
-        /* 發牌觸發動畫 */
         .card.deal {
             opacity: 1;
             transform: translateY(0);
         }
 
         .controls {
-            margin-top: 30px;
             display: flex;
             justify-content: center;
             gap: 15px;
+            margin-bottom: 2vh;
         }
 
         button {
-            padding: 12px 28px;
-            font-size: 16px;
+            padding: clamp(10px, 2vh, 15px) clamp(15px, 4vw, 28px);
+            font-size: clamp(14px, 2.2vh, 18px);
             cursor: pointer;
             border: none;
             border-radius: 6px;
@@ -92,13 +126,13 @@
         button:disabled { background-color: #555 !important; color: #888; cursor: not-allowed; }
 
         #message {
-            font-size: 24px;
-            margin-top: 20px;
-            min-height: 35px;
+            font-size: clamp(18px, 3vh, 24px);
+            min-height: clamp(25px, 4vh, 35px);
             font-weight: bold;
             color: #f1c40f;
             opacity: 0;
             transition: opacity 0.5s;
+            margin: 1vh 0;
         }
         #message.show { opacity: 1; }
     </style>
@@ -111,10 +145,10 @@
         <h2>莊家 (<span id="dealer-score">?</span>)</h2>
         <div id="dealer-cards" class="cards-container"></div>
 
+        <div id="message"></div>
+
         <h2>玩家 (<span id="player-score">0</span>)</h2>
         <div id="player-cards" class="cards-container"></div>
-
-        <div id="message"></div>
 
         <div class="controls">
             <button id="btn-hit" disabled>你要牌</button>
@@ -192,7 +226,6 @@
             btnHit.disabled = false;
             btnStand.disabled = false;
 
-            // 初始發牌動畫效果
             playerCards.forEach((c, i) => setTimeout(() => {
                 const cardUI = createCardUI(c);
                 playerCardsEl.appendChild(cardUI);
@@ -225,22 +258,19 @@
             if (score > 21) endGame("爆牌了！莊家獲勝。");
         }
 
-        // 懸念核心：莊家緩慢開牌邏輯
         async function stand() {
             if (!gameActive) return;
             gameActive = false;
             btnHit.disabled = true;
             btnStand.disabled = true;
 
-            // 1. 翻開莊家底牌
             const firstCardUI = dealerCardsEl.firstChild;
             firstCardUI.classList.remove('hidden');
             firstCardUI.innerHTML = `${dealerCards[0].suit}<br>${dealerCards[0].value}`;
             dealerScoreEl.innerText = calculateScore(dealerCards);
 
-            await new Promise(r => setTimeout(r, 1000)); // 停頓一秒
+            await new Promise(r => setTimeout(r, 1000));
 
-            // 2. 莊家補牌，每張牌間隔 1 秒
             let dealerScore = calculateScore(dealerCards);
             while (dealerScore < 17) {
                 const newCard = deck.pop();
@@ -252,10 +282,9 @@
                 dealerScore = calculateScore(dealerCards);
                 dealerScoreEl.innerText = dealerScore;
                 
-                await new Promise(r => setTimeout(r, 1000)); // 每一張牌都等一秒，增加緊張感
+                await new Promise(r => setTimeout(r, 1000));
             }
 
-            // 3. 最後判斷勝負
             const playerScore = calculateScore(playerCards);
             setTimeout(() => {
                 if (dealerScore > 21) endGame("莊家爆牌！你贏了！");
@@ -270,7 +299,6 @@
             btnHit.disabled = true;
             btnStand.disabled = true;
             showMessage(msg);
-            // 確保結尾時莊家分數正確
             dealerScoreEl.innerText = calculateScore(dealerCards);
         }
     </script>
