@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>21點</title>
+    <title>終極 21點 - 滑桿吸附版</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ============================
@@ -31,7 +31,7 @@
         @media (min-width: 600px) { #game-board { height: 96%; border-radius: 24px; } }
 
         /* ============================
-           頂部金錢資訊 (修復換行問題)
+           頂部金錢資訊
            ============================ */
         #finance-panel {
             display: flex; justify-content: space-between; align-items: center;
@@ -42,7 +42,7 @@
         
         .finance-item { 
             font-size: clamp(14px, 2.5vh, 18px); font-weight: 700; letter-spacing: 1px; 
-            white-space: nowrap; /* 強制不換行 */
+            white-space: nowrap; 
         }
         .finance-item span { color: #fbbf24; }
 
@@ -67,9 +67,6 @@
         .card.deal { opacity: 1; transform: translateY(0) scale(1); }
         .card.hidden { background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%); border: 2px solid rgba(255,255,255,0.2); color: transparent !important; }
 
-        /* ============================
-           手勢提示動畫
-           ============================ */
         #swipe-hint {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             color: rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; letter-spacing: 2px;
@@ -79,44 +76,71 @@
         @keyframes pulse { 0% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); } 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.95); } }
 
         /* ============================
+           滑桿設計 (Slider)
+           ============================ */
+        .slider-wrapper {
+            width: 100%;
+            padding: 5px 15px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1); /* 預設軌道背景 */
+            border-radius: 5px;
+            outline: none;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* 操控鈕 (Thumb) 樣式 */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fbbf24 40%, #d97706 100%);
+            border: 2px solid #fff;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]:active::-webkit-slider-thumb {
+            transform: scale(1.2); /* 點擊時稍微放大 */
+        }
+
+        /* ============================
            控制面板與按鈕
            ============================ */
-        .panel-container { min-height: clamp(60px, 10vh, 80px); display: flex; flex-direction: column; justify-content: center; }
+        .panel-container { min-height: clamp(80px, 15vh, 120px); display: flex; flex-direction: column; justify-content: center; }
         
         button {
-            padding: clamp(10px, 1.8vh, 14px) 0; font-size: clamp(12px, 1.8vh, 15px);
-            cursor: pointer; border: none; border-radius: 12px; /* 改為稍微方正的圓角以適應網格 */
+            padding: clamp(10px, 1.8vh, 14px) 0; font-size: clamp(13px, 1.8vh, 16px);
+            cursor: pointer; border: none; border-radius: 50px; 
             font-family: 'Montserrat', sans-serif; font-weight: 700;
             letter-spacing: 1px; color: white; transition: all 0.2s ease; text-transform: uppercase; touch-action: manipulation;
         }
 
-        /* 全新的網格下注面板排版 */
-        #betting-panel {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            width: 100%;
-        }
-        
-        #betting-panel button { width: 100%; }
-        #btn-chip-10 { grid-column: 1 / 2; }
-        #btn-minus-10 { grid-column: 2 / 3; }
-        #btn-chip-50 { grid-column: 3 / 4; }
-        #btn-minus-50 { grid-column: 4 / 5; }
-        #btn-all-in { grid-column: 1 / 3; }
-        #btn-clear-bet { grid-column: 3 / 5; }
-        #btn-deal { grid-column: 1 / 5; padding: 14px 0; font-size: 16px; border-radius: 50px; } /* Deal 按鈕維持長條圓潤 */
+        /* 下注階段下方按鈕 */
+        .controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        #betting-panel .controls button { width: clamp(80px, 20vw, 110px); }
+        #betting-panel .controls #btn-deal { width: clamp(120px, 35vw, 200px); }
 
-        /* 遊玩階段面板 */
-        #playing-panel, #gameover-panel { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        #playing-panel button, #gameover-panel button:not(.action-bailout) { width: clamp(85px, 20vw, 115px); padding: clamp(12px, 2vh, 16px) 0; border-radius: 50px; }
-
-        /* 按鈕樣式 */
-        button.chip-btn { background: rgba(255, 255, 255, 0.1); border: 2px dashed rgba(255, 215, 0, 0.5); color: #fbbf24; }
-        button.chip-btn:hover:not(:disabled) { background: rgba(255, 215, 0, 0.2); transform: translateY(-2px); border: 2px solid rgba(255, 215, 0, 1); }
-        
-        button.minus-btn { border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
-        button.minus-btn:hover:not(:disabled) { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 1); }
+        #playing-panel button, #gameover-panel button:not(.action-bailout) { width: clamp(85px, 20vw, 115px); padding: clamp(12px, 2vh, 16px) 0; }
 
         button.action-allin { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
         button.action-deal { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
@@ -126,9 +150,9 @@
         button.action-clear { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
         button.action-bailout { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); width: auto; padding: 12px 24px; border-radius: 50px; }
         
-        button:hover:not(:disabled):not(.chip-btn):not(.minus-btn) { transform: translateY(-3px); filter: brightness(1.2); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
+        button:hover:not(:disabled) { transform: translateY(-3px); filter: brightness(1.2); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
         button:active:not(:disabled) { transform: scale(0.95) !important; }
-        button:disabled { background: rgba(255, 255, 255, 0.05) !important; color: rgba(255, 255, 255, 0.2) !important; border: 2px dashed transparent !important; box-shadow: none !important; cursor: not-allowed; transform: none !important; }
+        button:disabled { background: rgba(255, 255, 255, 0.05) !important; color: rgba(255, 255, 255, 0.2) !important; border: none !important; box-shadow: none !important; cursor: not-allowed; transform: none !important; }
 
         .hidden-ui { display: none !important; }
 
@@ -143,7 +167,6 @@
         .win-text { color: #10b981 !important; text-shadow: 0 0 15px rgba(16, 185, 129, 0.5) !important; }
         .lose-text { color: #ef4444 !important; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5) !important; font-size: clamp(14px, 2.2vh, 20px) !important; }
 
-        /* 震撼的 All In 震動特效 */
         @keyframes shake-hard {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             20% { transform: translate(-3px, 0px) rotate(1deg); }
@@ -166,33 +189,42 @@
         <h2>Dealer <span>(<span id="dealer-score">?</span>)</span></h2>
         <div id="dealer-cards" class="cards-container"></div>
 
-        <div id="message">Place your bets!</div>
+        <div id="message">Slide to bet!</div>
         <div id="swipe-hint">⬆️ 滑動要牌 | ⬇️ 滑動停牌</div>
 
         <h2>Player <span>(<span id="player-score">0</span>)</span></h2>
         <div id="player-cards" class="cards-container"></div>
 
         <div class="panel-container">
-            <!-- 網格排列的下注面板 -->
+            <!-- 帶有滑桿的下注面板 -->
             <div id="betting-panel">
-                <button class="chip-btn" id="btn-chip-10">+$10</button>
-                <button class="chip-btn minus-btn" id="btn-minus-10">-$10</button>
-                <button class="chip-btn" id="btn-chip-50">+$50</button>
-                <button class="chip-btn minus-btn" id="btn-minus-50">-$50</button>
-                <button class="action-allin" id="btn-all-in">All In</button>
-                <button class="action-clear" id="btn-clear-bet">Clear</button>
-                <button class="action-deal" id="btn-deal" disabled>Deal</button>
+                <div class="slider-wrapper">
+                    <div class="slider-labels">
+                        <span>$0</span>
+                        <span>25%</span>
+                        <span>50%</span>
+                        <span>75%</span>
+                        <span>ALL IN</span>
+                    </div>
+                    <!-- 滑桿本體 -->
+                    <input type="range" id="bet-slider" min="0" max="1000" step="10" value="0">
+                </div>
+                <div class="controls">
+                    <button class="action-allin" id="btn-all-in">All In</button>
+                    <button class="action-clear" id="btn-clear-bet">Clear</button>
+                    <button class="action-deal" id="btn-deal" disabled>Deal</button>
+                </div>
             </div>
             
-            <div id="playing-panel" class="hidden-ui">
+            <div id="playing-panel" class="controls hidden-ui">
                 <button class="action-hit" id="btn-hit">Hit</button>
                 <button class="action-double" id="btn-double">Double</button>
                 <button class="action-stand" id="btn-stand">Stand</button>
             </div>
             
-            <div id="gameover-panel" class="hidden-ui">
+            <div id="gameover-panel" class="controls hidden-ui">
                 <button class="action-deal" id="btn-play-again">Play Again</button>
-                <button class="action-bailout hidden-ui" id="btn-bailout">申請救濟金 (+$500)</button>
+                <button class="action-bailout hidden-ui" id="btn-bailout">💸 申請救濟金 (+$500)</button>
             </div>
         </div>
     </div>
@@ -200,6 +232,8 @@
     <script>
         let bankroll = 1000;
         let currentBet = 0;
+        let phaseTotalFunds = 1000; // 紀錄下注階段開始時的總資產
+        
         const suits = ['♠', '♥', '♦', '♣'];
         const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
         let deck = [], dealerCards = [], playerCards = [], gameActive = false, isFirstTurn = true;
@@ -212,33 +246,85 @@
         
         const pBetting = document.getElementById('betting-panel'); const pPlaying = document.getElementById('playing-panel'); const pGameover = document.getElementById('gameover-panel');
         
+        const betSlider = document.getElementById('bet-slider');
         const btnHit = document.getElementById('btn-hit'); const btnStand = document.getElementById('btn-stand');
         const btnDouble = document.getElementById('btn-double'); const btnDeal = document.getElementById('btn-deal');
-        const btnAllIn = document.getElementById('btn-all-in'); const btnBailout = document.getElementById('btn-bailout');
+        const btnAllIn = document.getElementById('btn-all-in'); const btnClearBet = document.getElementById('btn-clear-bet');
+        const btnBailout = document.getElementById('btn-bailout');
 
-        const btnMinus10 = document.getElementById('btn-minus-10');
-        const btnMinus50 = document.getElementById('btn-minus-50');
+        // ==========================================
+        // 核心：滑桿與磁性吸附邏輯
+        // ==========================================
+        function initBettingPhase() {
+            phaseTotalFunds = bankroll + currentBet; // 重置本局最大資金
+            betSlider.max = phaseTotalFunds;
+            betSlider.value = currentBet;
+            
+            updateSliderVisuals();
+            updateFinanceUI();
+        }
 
-        // 綁定加減注事件
-        document.getElementById('btn-chip-10').addEventListener('click', () => addBet(10));
-        document.getElementById('btn-chip-50').addEventListener('click', () => addBet(50));
-        btnMinus10.addEventListener('click', () => subBet(10));
-        btnMinus50.addEventListener('click', () => subBet(50));
-        document.getElementById('btn-clear-bet').addEventListener('click', clearBet);
-        
+        betSlider.addEventListener('input', (e) => {
+            let rawVal = parseInt(e.target.value);
+            
+            // 計算吸附點 (0%, 25%, 50%, 75%, 100%)
+            let snapPoints = [
+                0,
+                Math.floor(phaseTotalFunds * 0.25 / 10) * 10,
+                Math.floor(phaseTotalFunds * 0.50 / 10) * 10,
+                Math.floor(phaseTotalFunds * 0.75 / 10) * 10,
+                phaseTotalFunds
+            ];
+            
+            // 吸附範圍設定為總資產的 6%
+            let threshold = phaseTotalFunds * 0.06; 
+
+            for(let p of snapPoints) {
+                if(Math.abs(rawVal - p) <= threshold) {
+                    rawVal = p; // 觸發磁性吸附
+                    break;
+                }
+            }
+
+            // 更新 UI
+            if (currentBet !== rawVal) {
+                currentBet = rawVal;
+                e.target.value = currentBet; // 強制把滑塊吸過去
+                bankroll = phaseTotalFunds - currentBet;
+                updateSliderVisuals();
+                updateFinanceUI();
+            }
+        });
+
+        // 動態填充滑桿綠色進度條
+        function updateSliderVisuals() {
+            let percentage = phaseTotalFunds === 0 ? 0 : (betSlider.value / phaseTotalFunds) * 100;
+            betSlider.style.background = `linear-gradient(to right, #10b981 ${percentage}%, rgba(255,255,255,0.1) ${percentage}%)`;
+        }
+
+        btnAllIn.addEventListener('click', () => {
+            if (phaseTotalFunds > 0) {
+                betSlider.value = phaseTotalFunds;
+                betSlider.dispatchEvent(new Event('input')); // 觸發滑桿更新
+                gameBoard.classList.add('shake-active');
+                setTimeout(() => gameBoard.classList.remove('shake-active'), 400);
+                showMessage("ALL IN！破釜沉舟！", "lose");
+            }
+        });
+
+        btnClearBet.addEventListener('click', () => {
+            betSlider.value = 0;
+            betSlider.dispatchEvent(new Event('input'));
+            showMessage("Slide to bet!");
+        });
+
+        // ==========================================
+        // 遊戲流程綁定
+        // ==========================================
         btnDeal.addEventListener('click', startGame); btnHit.addEventListener('click', hit);
         btnStand.addEventListener('click', stand); btnDouble.addEventListener('click', doubleDown);
         document.getElementById('btn-play-again').addEventListener('click', resetTable);
         btnBailout.addEventListener('click', bailout);
-        
-        btnAllIn.addEventListener('click', () => {
-            if (bankroll > 0) {
-                addBet(bankroll);
-                gameBoard.classList.add('shake-active');
-                setTimeout(() => gameBoard.classList.remove('shake-active'), 400);
-                showMessage("ALL IN！", "lose");
-            }
-        });
 
         // 手勢操作
         let touchStartY = 0; let swipeHandled = false;
@@ -250,25 +336,13 @@
             else if (diffY < -50) { swipeHandled = true; stand(); }
         });
 
-        // 更新 UI 邏輯 (包含減注防呆)
         function updateFinanceUI() {
             bankEl.innerText = bankroll; betEl.innerText = currentBet;
-            
             btnDeal.disabled = currentBet === 0;
-            document.getElementById('btn-chip-10').disabled = bankroll < 10;
-            document.getElementById('btn-chip-50').disabled = bankroll < 50;
-            
-            // 減注按鈕防呆：如果目前下注金額不夠減，就反灰
-            btnMinus10.disabled = currentBet < 10;
-            btnMinus50.disabled = currentBet < 50;
-            
             btnAllIn.disabled = bankroll <= 0;
         }
 
-        function addBet(amount) { if (bankroll >= amount) { bankroll -= amount; currentBet += amount; updateFinanceUI(); } }
-        function subBet(amount) { if (currentBet >= amount) { bankroll += amount; currentBet -= amount; updateFinanceUI(); } }
-        function clearBet() { bankroll += currentBet; currentBet = 0; updateFinanceUI(); msgEl.innerText = "Place your bets!"; msgEl.className = "show"; }
-        function bailout() { bankroll = 500; updateFinanceUI(); resetTable(); showMessage("獲得 $500"); }
+        function bailout() { bankroll = 500; currentBet = 0; initBettingPhase(); resetTable(); showMessage("警衛把你踢回街上，你撿到了 $500！"); }
 
         function switchPanel(panelName) {
             pBetting.classList.add('hidden-ui'); pPlaying.classList.add('hidden-ui');
@@ -278,7 +352,7 @@
             if (panelName === 'playing') pPlaying.classList.remove('hidden-ui');
             if (panelName === 'gameover') {
                 pGameover.classList.remove('hidden-ui');
-                if (bankroll <= 0) { document.getElementById('btn-play-again').classList.add('hidden-ui'); btnBailout.classList.remove('hidden-ui'); }
+                if (bankroll <= 0 && currentBet === 0) { document.getElementById('btn-play-again').classList.add('hidden-ui'); btnBailout.classList.remove('hidden-ui'); }
                 else { document.getElementById('btn-play-again').classList.remove('hidden-ui'); }
             }
         }
@@ -292,7 +366,8 @@
 
         function resetTable() {
             dCardsEl.innerHTML = ''; pCardsEl.innerHTML = ''; dScoreEl.innerText = '?'; pScoreEl.innerText = '0';
-            currentBet = 0; updateFinanceUI(); switchPanel('betting'); showMessage("Place your bets!"); swipeHint.classList.remove('show');
+            switchPanel('betting'); showMessage("Slide to bet!"); swipeHint.classList.remove('show');
+            initBettingPhase();
         }
 
         function createDeck() {
@@ -385,32 +460,34 @@
 
             const playerScore = calcScore(playerCards);
             setTimeout(() => {
-                if (dealerScore > 21) processPayout('win', "莊家爆牌 贏得 $");
-                else if (dealerScore > playerScore) processPayout('lose', "莊家點數大 輸了 $");
-                else if (dealerScore < playerScore) processPayout('win', "你贏了 獲得 $");
-                else processPayout('push', "平手");
+                if (dealerScore > 21) processPayout('win', "莊家爆牌！贏得 $");
+                else if (dealerScore > playerScore) processPayout('lose', "莊家點數大。輸了 $");
+                else if (dealerScore < playerScore) processPayout('win', "你贏了！獲得 $");
+                else processPayout('push', "雙方平手 (Push)");
             }, 500);
         }
 
         function processPayout(result, customMsg = "") {
             gameActive = false; swipeHint.classList.remove('show'); let winAmount = 0;
-            if (result === 'blackjack') { winAmount = currentBet * 2.5; bankroll += winAmount; showMessage(`Blackjack！贏得 $${winAmount}!`, 'win'); } 
+            if (result === 'blackjack') { winAmount = Math.floor(currentBet * 2.5); bankroll += winAmount; showMessage(`Blackjack！贏得 $${winAmount}!`, 'win'); } 
             else if (result === 'win') { winAmount = currentBet * 2; bankroll += winAmount; showMessage(`${customMsg}${winAmount}!`, 'win'); } 
             else if (result === 'push') { bankroll += currentBet; showMessage(customMsg); } 
             else if (result === 'bust') { 
-                if(bankroll === 0) showMessage(`爆牌 你被警衛丟出去了 輸掉 $${currentBet}`, 'lose');
-                else showMessage(`爆牌了 輸掉 $${currentBet}`, 'lose'); 
+                if(bankroll === 0) showMessage(`爆牌！你被警衛丟出去了！輸掉 $${currentBet}`, 'lose');
+                else showMessage(`爆牌了！輸掉 $${currentBet}`, 'lose'); 
             }
             else if (result === 'lose') { 
-                if(bankroll === 0) showMessage(`破產 警衛把你架了出去 輸了 $${currentBet}`, 'lose');
+                if(bankroll === 0) showMessage(`破產！警衛把你架了出去！輸了 $${currentBet}`, 'lose');
                 else showMessage(`${customMsg}${currentBet}`, 'lose'); 
             }
 
+            currentBet = 0; // 結算後清空桌上籌碼
             dScoreEl.innerText = calcScore(dealerCards); updateFinanceUI();
             setTimeout(() => { switchPanel('gameover'); }, 1200);
         }
 
-        updateFinanceUI(); switchPanel('betting');
+        // 初始化
+        initBettingPhase(); switchPanel('betting');
     </script>
 </body>
 </html>
