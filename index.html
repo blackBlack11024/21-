@@ -192,7 +192,7 @@
             
             <div id="gameover-panel" class="hidden-ui">
                 <button class="action-deal" id="btn-play-again">Play Again</button>
-                <button class="action-bailout hidden-ui" id="btn-bailout">💸 申請救濟金 (+$500)</button>
+                <button class="action-bailout hidden-ui" id="btn-bailout">申請救濟金 (+$500)</button>
             </div>
         </div>
     </div>
@@ -268,7 +268,7 @@
         function addBet(amount) { if (bankroll >= amount) { bankroll -= amount; currentBet += amount; updateFinanceUI(); } }
         function subBet(amount) { if (currentBet >= amount) { bankroll += amount; currentBet -= amount; updateFinanceUI(); } }
         function clearBet() { bankroll += currentBet; currentBet = 0; updateFinanceUI(); msgEl.innerText = "Place your bets!"; msgEl.className = "show"; }
-        function bailout() { bankroll = 500; updateFinanceUI(); resetTable(); showMessage("警衛把你踢回街上，你撿到了 $500！"); }
+        function bailout() { bankroll = 500; updateFinanceUI(); resetTable(); showMessage("獲得 $500"); }
 
         function switchPanel(panelName) {
             pBetting.classList.add('hidden-ui'); pPlaying.classList.add('hidden-ui');
