@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>21點</title>
-    <!-- 引入高質感的現代字體 -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>高質感 21點 - 賭神金錢版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            /* 現代深邃漸層背景 */
             background: linear-gradient(135deg, #0f172a 0%, #1e1e2f 50%, #000000 100%);
             color: #f8fafc;
             text-align: center;
@@ -28,49 +26,53 @@
             max-width: 600px;
             height: 100%;
             max-height: 850px;
-            /* 琉璃擬態 Glassmorphism 設計 */
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 0; 
             display: flex;
             flex-direction: column;
             justify-content: space-evenly; 
-            padding: 3vh 4vw;
+            padding: 2vh 4vw;
             box-sizing: border-box;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         @media (min-width: 600px) {
-            #game-board {
-                height: 96%; 
-                border-radius: 24px;
-            }
+            #game-board { height: 96%; border-radius: 24px; }
         }
 
-        h1 { 
-            font-weight: 300; 
-            margin: 0; 
-            letter-spacing: 6px; 
-            font-size: clamp(26px, 4.5vh, 36px);
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        /* 頂部金錢面板 */
+        #finance-panel {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,215,0,0.2);
+            margin-bottom: 1vh;
         }
-        
+
+        .finance-item {
+            font-size: clamp(14px, 2.5vh, 18px);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .finance-item span {
+            color: #fbbf24; /* 金幣黃 */
+            font-family: 'Montserrat', sans-serif;
+        }
+
         h2 { 
             font-weight: 500; 
             margin: 0; 
-            font-size: clamp(15px, 2.5vh, 18px); 
+            font-size: clamp(14px, 2.2vh, 18px); 
             color: #94a3b8; 
             letter-spacing: 2px;
         }
         
-        /* 分數的特別強調 */
-        h2 span {
-            color: #e2e8f0;
-            font-weight: 700;
-        }
+        h2 span { color: #e2e8f0; font-weight: 700; }
 
         .cards-container {
             display: flex;
@@ -79,54 +81,57 @@
             flex-wrap: wrap;
             align-content: center;
             flex-grow: 1; 
-            min-height: clamp(110px, 20vh, 160px);
+            min-height: clamp(110px, 18vh, 160px);
         }
 
-        /* 更精緻的撲克牌比例與質感 */
         .card {
-            height: clamp(90px, 16vh, 140px);
-            width: clamp(65px, 11.5vh, 100px);
+            height: clamp(85px, 14vh, 130px);
+            width: clamp(60px, 10vh, 90px);
             background: linear-gradient(145deg, #ffffff, #e6e6e6);
             color: #0f172a;
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: clamp(22px, 4vh, 36px);
+            font-size: clamp(22px, 4vh, 32px);
             font-weight: 700;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.5);
             opacity: 0;
             transform: translateY(-30px) scale(0.95);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 更有彈性的動畫 */
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .card.red { color: #f43f5e; }
-
-        /* 高質感的牌背設計 */
         .card.hidden {
             background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
             border: 2px solid rgba(255,255,255,0.2);
             color: transparent !important;
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
+        .card.deal { opacity: 1; transform: translateY(0) scale(1); }
 
-        .card.deal {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+        /* 動態面板容器 */
+        .panel-container {
+            min-height: clamp(60px, 10vh, 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
+        /* 統一大小的按鈕樣式 */
         .controls {
             display: flex;
             justify-content: center;
-            gap: clamp(12px, 3vw, 20px);
-            margin-bottom: 2vh;
-            margin-top: 1vh;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        /* 現代感膠囊按鈕 */
         button {
-            padding: clamp(12px, 2.5vh, 18px) clamp(20px, 5vw, 36px);
-            font-size: clamp(15px, 2.5vh, 18px);
+            /* 強制統一寬度與高度 */
+            width: clamp(90px, 22vw, 120px);
+            padding: clamp(12px, 2vh, 16px) 0;
+            font-size: clamp(14px, 2vh, 16px);
+            
             cursor: pointer;
             border: none;
             border-radius: 50px;
@@ -136,93 +141,230 @@
             color: white;
             transition: all 0.3s ease;
             text-transform: uppercase;
+            box-sizing: border-box;
         }
 
-        button#btn-start { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        /* 籌碼按鈕專屬樣式 (圓形設計感) */
+        button.chip-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 215, 0, 0.5);
+            color: #fbbf24;
+            box-shadow: none;
         }
-        button#btn-hit { 
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        }
-        button#btn-stand { 
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
-        }
-        
-        /* 懸停發光效果 */
-        button:hover:not(:disabled) { 
+        button.chip-btn:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.2);
             transform: translateY(-3px);
+            border: 2px solid rgba(255, 215, 0, 1);
         }
-        button#btn-start:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
-        button#btn-hit:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6); }
-        button#btn-stand:hover:not(:disabled) { box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6); }
+
+        /* 動作按鈕顏色 */
+        button.action-deal { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        button.action-hit { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        button.action-stand { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        button.action-clear { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
+        button.action-bailout { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); width: auto; padding: 12px 24px; }
+        
+        button:hover:not(:disabled):not(.chip-btn) { 
+            transform: translateY(-3px);
+            filter: brightness(1.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
 
         button:disabled { 
-            background: rgba(255, 255, 255, 0.1) !important; 
-            color: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.05) !important; 
+            color: rgba(255, 255, 255, 0.2) !important; 
+            border: none !important;
             box-shadow: none !important;
             cursor: not-allowed; 
+            transform: none !important;
         }
 
-        /* 結果提示文字 */
+        /* 隱藏/顯示控制 */
+        .hidden-ui { display: none !important; }
+
         #message {
-            font-size: clamp(18px, 3vh, 26px);
-            min-height: clamp(28px, 4.5vh, 40px);
-            font-weight: 500;
+            font-size: clamp(18px, 3vh, 24px);
+            font-weight: 800;
             color: #fcd34d;
-            letter-spacing: 1px;
             opacity: 0;
             transform: scale(0.9);
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin: 1vh 0;
             text-shadow: 0 2px 10px rgba(252, 211, 77, 0.3);
+            min-height: 35px;
         }
-        #message.show { 
-            opacity: 1; 
-            transform: scale(1);
-        }
+        #message.show { opacity: 1; transform: scale(1); }
+
+        /* 贏錢特效字 */
+        .win-text { color: #10b981 !important; text-shadow: 0 0 15px rgba(16, 185, 129, 0.5) !important; }
+        .lose-text { color: #ef4444 !important; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5) !important; }
     </style>
 </head>
 <body>
 
     <div id="game-board">
-        <h1>Blackjack</h1>
+        <!-- 頂部金錢顯示 -->
+        <div id="finance-panel">
+            <div class="finance-item">💰 Bank: $<span id="bankroll-display">1000</span></div>
+            <div class="finance-item">🪙 Bet: $<span id="bet-display">0</span></div>
+        </div>
         
-        <h2>莊家 <span>(<span id="dealer-score">?</span>)</span></h2>
+        <h2>Dealer <span>(<span id="dealer-score">?</span>)</span></h2>
         <div id="dealer-cards" class="cards-container"></div>
 
-        <div id="message"></div>
+        <div id="message">Place your bets!</div>
 
-        <h2>玩家 <span>(<span id="player-score">0</span>)</span></h2>
+        <h2>Player <span>(<span id="player-score">0</span>)</span></h2>
         <div id="player-cards" class="cards-container"></div>
 
-        <div class="controls">
-            <button id="btn-hit" disabled>Hit</button>
-            <button id="btn-stand" disabled>Stand</button>
-            <button id="btn-start">Play</button>
+        <!-- 動態操作面板區 -->
+        <div class="panel-container">
+            
+            <!-- 階段 1：下注面板 -->
+            <div id="betting-panel" class="controls">
+                <button class="chip-btn" id="btn-chip-10">+$10</button>
+                <button class="chip-btn" id="btn-chip-50">+$50</button>
+                <button class="action-clear" id="btn-clear-bet">Clear</button>
+                <button class="action-deal" id="btn-deal" disabled>Deal</button>
+            </div>
+
+            <!-- 階段 2：遊戲中面板 -->
+            <div id="playing-panel" class="controls hidden-ui">
+                <button class="action-hit" id="btn-hit">Hit</button>
+                <button class="action-stand" id="btn-stand">Stand</button>
+            </div>
+
+            <!-- 階段 3：結束/破產面板 -->
+            <div id="gameover-panel" class="controls hidden-ui">
+                <button class="action-deal" id="btn-play-again">Play Again</button>
+                <button class="action-bailout hidden-ui" id="btn-bailout">💸 申請破產救濟金 (+$500)</button>
+            </div>
+
         </div>
     </div>
 
     <script>
+        // --- 遊戲狀態與金錢變數 ---
+        let bankroll = 1000;
+        let currentBet = 0;
+        
         const suits = ['♠', '♥', '♦', '♣'];
         const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-        
         let deck = [], dealerCards = [], playerCards = [], gameActive = false;
 
+        // --- DOM 元素 ---
         const dealerCardsEl = document.getElementById('dealer-cards');
         const playerCardsEl = document.getElementById('player-cards');
         const dealerScoreEl = document.getElementById('dealer-score');
         const playerScoreEl = document.getElementById('player-score');
         const messageEl = document.getElementById('message');
+        
+        const bankrollDisplay = document.getElementById('bankroll-display');
+        const betDisplay = document.getElementById('bet-display');
+
+        // 面板與按鈕
+        const bettingPanel = document.getElementById('betting-panel');
+        const playingPanel = document.getElementById('playing-panel');
+        const gameoverPanel = document.getElementById('gameover-panel');
+        
+        const btnDeal = document.getElementById('btn-deal');
         const btnHit = document.getElementById('btn-hit');
         const btnStand = document.getElementById('btn-stand');
-        const btnStart = document.getElementById('btn-start');
+        const btnPlayAgain = document.getElementById('btn-play-again');
+        const btnBailout = document.getElementById('btn-bailout');
 
-        btnStart.addEventListener('click', startGame);
+        // --- 綁定事件 ---
+        document.getElementById('btn-chip-10').addEventListener('click', () => addBet(10));
+        document.getElementById('btn-chip-50').addEventListener('click', () => addBet(50));
+        document.getElementById('btn-clear-bet').addEventListener('click', clearBet);
+        
+        btnDeal.addEventListener('click', startGame);
         btnHit.addEventListener('click', hit);
         btnStand.addEventListener('click', stand);
+        btnPlayAgain.addEventListener('click', resetTable);
+        btnBailout.addEventListener('click', bailout);
+
+        // --- 金錢系統邏輯 ---
+        function updateFinanceUI() {
+            bankrollDisplay.innerText = bankroll;
+            betDisplay.innerText = currentBet;
+            // 只有下注大於 0 才能發牌
+            btnDeal.disabled = currentBet === 0;
+        }
+
+        function addBet(amount) {
+            if (bankroll >= amount) {
+                bankroll -= amount;
+                currentBet += amount;
+                updateFinanceUI();
+                playSound(); // 點擊的視覺反饋
+            } else {
+                showMessage("餘額不足！");
+                messageEl.classList.remove('win-text', 'lose-text');
+            }
+        }
+
+        function clearBet() {
+            bankroll += currentBet;
+            currentBet = 0;
+            updateFinanceUI();
+        }
+
+        function bailout() {
+            bankroll = 500;
+            updateFinanceUI();
+            resetTable();
+            showMessage("東山再起！請下注。");
+        }
+
+        // --- 畫面切換邏輯 ---
+        function switchPanel(panelName) {
+            bettingPanel.classList.add('hidden-ui');
+            playingPanel.classList.add('hidden-ui');
+            gameoverPanel.classList.add('hidden-ui');
+            btnBailout.classList.add('hidden-ui');
+
+            if (panelName === 'betting') bettingPanel.classList.remove('hidden-ui');
+            if (panelName === 'playing') playingPanel.classList.remove('hidden-ui');
+            if (panelName === 'gameover') {
+                gameoverPanel.classList.remove('hidden-ui');
+                if (bankroll === 0 && currentBet === 0) {
+                    btnPlayAgain.classList.add('hidden-ui');
+                    btnBailout.classList.remove('hidden-ui'); // 顯示破產按鈕
+                } else {
+                    btnPlayAgain.classList.remove('hidden-ui');
+                }
+            }
+        }
+
+        function playSound() {
+            // 這裡原本可以放音效，改用 UI 微小震動代替
+            betDisplay.style.transform = 'scale(1.2)';
+            setTimeout(() => betDisplay.style.transform = 'scale(1)', 150);
+        }
+
+        function showMessage(msg, type = 'normal') {
+            messageEl.classList.remove('show', 'win-text', 'lose-text');
+            messageEl.innerText = msg;
+            if (type === 'win') messageEl.classList.add('win-text');
+            if (type === 'lose') messageEl.classList.add('lose-text');
+            
+            // 強制重繪以觸發動畫
+            void messageEl.offsetWidth; 
+            messageEl.classList.add('show');
+        }
+
+        // --- 核心遊戲邏輯 ---
+        function resetTable() {
+            dealerCardsEl.innerHTML = '';
+            playerCardsEl.innerHTML = '';
+            dealerScoreEl.innerText = '?';
+            playerScoreEl.innerText = '0';
+            currentBet = 0;
+            updateFinanceUI();
+            switchPanel('betting');
+            showMessage("Place your bets!");
+            messageEl.classList.remove('win-text', 'lose-text');
+        }
 
         function createDeck() {
             deck = [];
@@ -247,33 +389,25 @@
         function createCardUI(card, isHidden = false) {
             const div = document.createElement('div');
             div.className = 'card' + (card.suit === '♥' || card.suit === '♦' ? ' red' : '');
-            if (isHidden) {
-                div.classList.add('hidden');
-            } else {
-                div.innerHTML = `${card.suit}<br>${card.value}`;
-            }
+            if (isHidden) div.classList.add('hidden');
+            else div.innerHTML = `${card.suit}<br>${card.value}`;
             return div;
         }
 
-        function showMessage(msg) {
-            messageEl.innerText = msg;
-            messageEl.classList.add('show');
-        }
-
         function startGame() {
+            if (currentBet === 0) return; // 防呆
+            
+            switchPanel('playing');
             createDeck();
             dealerCards = [deck.pop(), deck.pop()];
             playerCards = [deck.pop(), deck.pop()];
             gameActive = true;
             
-            dealerCardsEl.innerHTML = '';
-            playerCardsEl.innerHTML = '';
-            messageEl.classList.remove('show');
-            btnStart.innerText = 'Play Again';
             btnHit.disabled = false;
             btnStand.disabled = false;
+            showMessage("Good Luck!");
 
-            // 稍微調整動畫延遲，配合新的彈性動畫
+            // 發牌動畫
             playerCards.forEach((c, i) => setTimeout(() => {
                 const cardUI = createCardUI(c);
                 playerCardsEl.appendChild(cardUI);
@@ -288,8 +422,11 @@
                 dealerScoreEl.innerText = i === 1 ? calculateScore([dealerCards[1]]) : '?';
             }, i * 350 + 700));
 
+            // 檢查玩家天生 21 點 (Blackjack)
             setTimeout(() => {
-                if (calculateScore(playerCards) === 21) endGame("玩家 21 點！贏了！");
+                if (calculateScore(playerCards) === 21) {
+                    processPayout('blackjack');
+                }
             }, 1800);
         }
 
@@ -303,7 +440,8 @@
             
             const score = calculateScore(playerCards);
             playerScoreEl.innerText = score;
-            if (score > 21) endGame("爆牌了！莊家獲勝。");
+            
+            if (score > 21) processPayout('bust');
         }
 
         async function stand() {
@@ -312,6 +450,7 @@
             btnHit.disabled = true;
             btnStand.disabled = true;
 
+            // 翻開莊家底牌
             const firstCardUI = dealerCardsEl.firstChild;
             firstCardUI.classList.remove('hidden');
             firstCardUI.innerHTML = `${dealerCards[0].suit}<br>${dealerCards[0].value}`;
@@ -329,26 +468,58 @@
                 
                 dealerScore = calculateScore(dealerCards);
                 dealerScoreEl.innerText = dealerScore;
-                
-                await new Promise(r => setTimeout(r, 1200)); // 配合更優雅的動畫，把懸念時間稍微拉長一點點
+                await new Promise(r => setTimeout(r, 1200));
             }
 
             const playerScore = calculateScore(playerCards);
             setTimeout(() => {
-                if (dealerScore > 21) endGame("莊家爆牌！你贏了！");
-                else if (dealerScore > playerScore) endGame("莊家點數較大，你輸了。");
-                else if (dealerScore < playerScore) endGame("你贏了！");
-                else endGame("雙方平手！");
+                if (dealerScore > 21) processPayout('win', "莊家爆牌！贏得 $");
+                else if (dealerScore > playerScore) processPayout('lose', "莊家點數大。輸了 $");
+                else if (dealerScore < playerScore) processPayout('win', "你贏了！獲得 $");
+                else processPayout('push', "雙方平手 (Push)");
             }, 600);
         }
 
-        function endGame(msg) {
+        // --- 結算與派彩邏輯 ---
+        function processPayout(result, customMsg = "") {
             gameActive = false;
-            btnHit.disabled = true;
-            btnStand.disabled = true;
-            showMessage(msg);
+            let winAmount = 0;
+
+            if (result === 'blackjack') {
+                // Blackjack 賠率 3:2 (拿回本金 + 1.5倍獎金 = 2.5倍)
+                winAmount = currentBet * 2.5; 
+                bankroll += winAmount;
+                showMessage(`Blackjack 21點！贏得 $${winAmount}!`, 'win');
+            } 
+            else if (result === 'win') {
+                winAmount = currentBet * 2; // 1:1 賠率 (拿回本金 + 1倍獎金)
+                bankroll += winAmount;
+                showMessage(`${customMsg}${winAmount}!`, 'win');
+            } 
+            else if (result === 'push') {
+                bankroll += currentBet; // 退回本金
+                showMessage(customMsg);
+            } 
+            else if (result === 'bust') {
+                showMessage(`爆牌了！輸掉 $${currentBet}`, 'lose');
+            }
+            else if (result === 'lose') {
+                showMessage(`${customMsg}${currentBet}`, 'lose');
+            }
+
+            // 更新莊家真實分數
             dealerScoreEl.innerText = calculateScore(dealerCards);
+            updateFinanceUI();
+            
+            // 延遲顯示結束面板，讓玩家看清楚結果
+            setTimeout(() => {
+                switchPanel('gameover');
+            }, 1000);
         }
+
+        // 初始化 UI
+        updateFinanceUI();
+        switchPanel('betting');
     </script>
 </body>
 </html>
